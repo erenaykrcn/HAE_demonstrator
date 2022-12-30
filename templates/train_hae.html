@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<div class="train-cont">
+	<div style="width: 50%; border: none" 
+		class="train-navbar train-navbar-left"
+	>HAE</div>
+	<div style="width: 49.73%;" 
+		class="train-navbar train-navbar-right" onclick="goQVC()"
+	>QVC</div>
+
+	<div class="inner-window">
+
+		<div class="slider-container">
+		  <input type="range" min="-10" max="1" value="-4" class="slider" id="learningRate">
+			<p class="slider-label">Learning rate: 10^(-4)</p>
+		</div>
+
+		<div class="slider-container">
+		  <input type="range" min="1" max="200" value="100" class="slider" id="epochs">
+			<p class="slider-label" id="epochs">Epochs: 100</p>
+		</div>
+		
+		<div class="pqc-cont">
+			<p class="pqc-cont-text">Parametrized Quantum Circuits</p>
+			<div class="pqc-row">
+				<div class="pqc-row-elem">PQC1</div>
+				<div class="pqc-row-elem"
+					style="
+					    font-weight: bold;
+					    color: rgba(248, 232, 250, 1);
+					    cursor: pointer;
+					    background-color: rgb(40, 61, 94);
+					" 	
+				>PQC2</div>
+				<div class="pqc-row-elem">PQC3</div>
+				<div class="pqc-row-elem">PQC4</div>
+				<div class="pqc-row-elem">PQC5</div>
+				<div class="pqc-row-elem">PQC6</div>
+				<div class="pqc-row-elem">PQC7</div>
+				<div class="pqc-row-elem">PQC8</div>
+			</div>
+			<div>
+				<div class="pqc-row-elem">PQC9</div>
+				<div class="pqc-row-elem">PQC10</div>
+				<div class="pqc-row-elem">PQC11</div>
+				<div class="pqc-row-elem">PQC12</div>
+				<div class="pqc-row-elem">PQC13</div>
+				<div class="pqc-row-elem">PQC14</div>
+				<div class="pqc-row-elem">PQC15</div>
+				<div class="pqc-row-elem">PQC16</div>
+			</div>
+
+			<div style="text-align: center;">
+				<img style="width: 50%" src="{% static 'train_hae/pqc1.png' %}">
+			</div>
+
+		</div>
+	</div>
+
+</div>
+
+<script>
+	const learningRate = document.getElementById('learningRate');
+	learningRate.addEventListener('change', updateValueLR);
+
+	function updateValueLR(e) {
+	  document.getElementsByClassName('slider-label')[0].innerText = "Learning rate: 10^(" + e.target.value + ")";
+	}
+
+	const epochs = document.getElementById('epochs');
+	epochs.addEventListener('change', updateValueE);
+
+	function updateValueE(e) {
+	  document.getElementsByClassName('slider-label')[1].innerText = "Epochs: " + e.target.value;
+	}
+
+	function goQVC() {
+		window.location.href='/train/qvc/';
+	}
+
+
+</script>
+{% endblock %}

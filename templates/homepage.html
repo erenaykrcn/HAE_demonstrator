@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<div class="homepage-main-cont">
+    <div class="intro-to-project">
+        <div class="itp-heading">Introduction to the Project</div>
+        <p class="itp-content">
+            This demonstrator visualizes the algorithm implemented in the paper, written by Alona Sakhnenko, Corey O'Meara, Kumar J. B. Ghosh, Christian B. Mendl, Giorgio Cortiana and Juan Bernabé-Moreno, which can be found <a href="https://arxiv.org/abs/2112.08869" target=”_blank”  style="color: rgb(42, 93, 130)">here</a>. 
+            <br>
+            The algorithm modifies the known approach of using a classical Autoencoder Neural Network to detect anomalies in a given data set to integrate a 
+            Quantum Circuit into the classical neural network to boost performance. The training of the weights are based on the recontruction loss, however
+            evaluation of the given test data set is based on the assumption that the abnormal data points are outliers in the latent space representation of the
+            high dimensional data. These outliers are detected through an IsolationForest model. This IsolationForest model is fitted (trained) by the latent space
+            representation of the normal data. Then the test data is encoded to get the latent space representation and then fed into the IsolationForest to get the predictions. 
+            <br>
+            <br>
+            <img style="width: 100%" src="{% static 'homepage/HAE_diagram.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 1:</a> Building Blocks of the Hybrid Autoencoder (HAE)</label>
+            <br>
+            <br>
+            In addition to the aforementioned approach, I implemented and tested another approach for this problem, that is named QVC_loss approach in this project. Main
+            difference of this approach is that the weights of the Quantum Circuit and weights of the Classical Autoencoder are trained using different loss functions/approaches. Firstly the classical weights are trained without the Quantum layer based on the reconstruction loss. Training data set for this step contains only
+            normal data. Afterwards, a second training data set for the training of the hyperparameters of the Quantum layer is formed, containing both normal and abnormal data, which is also prelabeled. This data is first processed by the encoder of the Classical Autoencoder to get the latent space representation. This low dimensional data is then encoded to the encoding layer of the Quantum Circuit and hyperparameters of the processing layer of the Quantum Circuit are trained with a Variational Classifier Algorithm. SPSA Optimizer of Qiskit is used during training. The evaluation step of this approach does not require the use of the IsolationForest as the outcome of the Quantum layer already delivers the classification predictions. 
+            <br>
+            <br>
+            <img style="width: 100%" src="{% static 'homepage/QVC_diagram.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 2:</a> Building Blocks of the Quantum Variational Classifier Autoencoder (QVC_loss)</label>
+            <br>
+            <br>
+            I observed a significant boost to the precision of the predictions, using the QVC_loss approach in comparison to the HAE (Hybrid Autoencoder) or CAE (Classical Autoencoder) approaches. Overall, QVC_loss also delivered higher F1 scores. the downside of the QVC_loss however is that it takes longer to be trained using a Quantum simulator.
+            <br>
+            <br>
+            <img style="width: 100%" src="{% static 'homepage/metrics_2.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 3:</a> Comparison of the F1, Precision and Recall Scores of the Different Approaches</label>
+            <br>
+            <br>
+            In this demonstrator project, you will be able to select different Quantum Circuit configurations and train the model with the selected QC, with a customizable learningRate, number of epochs and number of training data points. You will also be able to evaluate the test data points with a pre-trained model and compare the results for different approaches. Lastly, it is also possible to visualize the data points in the usecase data set as they represent pixels of a 3x3 image, along with the reconstructed image by the Autoencoder, given one of the pre-trained models.
+
+        </p>
+
+    </div>
+    <div class="intro-to-usecase">
+        <div class="itp-heading">Use Case and Data Set</div>
+        <p class="itp-content">
+            For this demonstrator, I chose one of the public data sets mentioned in the <a href="https://arxiv.org/abs/2112.08869" target=”_blank”  style="color: rgb(42, 93, 130)">paper</a> that the project is based on, <a href="https://archive.ics.uci.edu/ml/datasets/Statlog+(Landsat+Satellite)" target=”_blank”  style="color: rgb(42, 93, 130)"> Statlog (Landsat Satellite) Data Set </a>. This is a multi-class dataset with labels 1 to 7, on different soil types: <br><br>
+        </p>
+        <p class="itp-content" style="text-align: center; padding-left: 50px">
+            1: red soil <br>
+            2: cotton crop <br>
+            3: grey soil <br>
+            4: damp grey soil <br>
+            5: soil with vegetation stubble <br>
+            6: mixture class (all types present) <br>
+            7: very damp grey soil
+
+            <p class="itp-content">
+            For the purposes of our algorithm, the first 3 classes are considered to be anomalies in the data set and the rest are the normal data. The data points are 36 dimensional, each feature is an integer between 0 and 255. In groups of four features, each data point represents 9 pixels (3x3), whereas each pixel is described by four spectral parameters (rgba).
+            </p>
+
+            <div class="home-data-points-cont"> <div class="home-data-points">
+            <img style="width: 100%" src="{% static 'homepage/class_2.png'%}"> <label><a style="font-weight: bold;">Figure 4:</a> Example
+            Data Point, Class 2</label> </div> <div class="home-data-points">
+            <img style="width: 100%" src="{% static 'homepage/class_1.png'%}"> <label><a style="font-weight: bold;">Figure 5:</a> Example
+            Data Point, Class 1</label> </div> <br><br> <div
+            class="home-data-points"> <img style="width: 100%" src="{% static 'homepage/class_5.png' %}"> <label><a style="font-weight:
+            bold;">Figure 6:</a> Example Data Point, Class 5</label> </div>
+            <div class="home-data-points"> <img style="width: 100%" src="{% static 'homepage/class_7.png' %}"> <label><a style="font-weight:
+            bold;">Figure 7:</a> Example Data Point, Class 7</label> </div>
+            </div>
+        </p>
+        <p class="itp-content">
+            For the QVC_loss approach, it is possible to train the parametrized Quantum circuit on a multi-class classification by keeping the labels from 1 to 7 of the training data set or on a binary classification by replacing the labels 1-3 as 0 (anomalies) and labels 4-7 as 1 (normal data points).  
+            <br>
+            <br>
+            <img style="width: 100%" src="{% static 'homepage/2D-plot-n_samples-400.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 8:</a> 
+                Two dimensional Principal Component Analysis Projection of
+                the 4 dimenstional latent space representation of 400 test data points. Latent space representation extracted from the Classical Encoder. 
+            </label>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="{% static 'script/homepage.js' %}"></script>
+{% endblock %}

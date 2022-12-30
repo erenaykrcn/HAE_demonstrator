@@ -1,0 +1,246 @@
+
+.main-container {
+	height:auto;
+    min-height: 100vh;
+    border-radius: 5px;
+    background: linear-gradient(260deg, rgba(26, 68, 135, 1), rgba(248, 232, 250, 1));
+    background-size: 200% 200%;
+    -webkit-animation: back-ani 10s ease infinite;
+    -moz-animation: back-ani 10s ease infinite;
+    animation: back-ani 10s ease infinite;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.homepage-main-cont {
+    padding-bottom: 50px;
+}
+
+
+.home-heading {
+	padding-top: 50px;
+	padding-bottom: 50px;
+    font-size: 3vw;
+    font-family: Quicksand;
+    text-align: center;
+    border-bottom: solid;
+    margin-bottom: 20px;
+}
+
+.navbar-home {
+    font-family: Quicksand;
+	text-align: center;
+    border-bottom: solid;
+    padding-bottom: 20px;
+}
+
+.navbar-element {
+    display: inline-block;
+    width: 49%;
+    font-size: 1.3vw;
+    cursor: pointer;
+}
+
+.navbar-element-left{
+    width: 50.3%;
+
+}
+
+.navbar-element-right {
+    width: 49.3%;
+
+}
+
+.navbar-element-hover:hover {
+	font-weight: bold;
+}
+
+.homepage-main-cont {
+    padding-top: 50px;
+}
+
+.intro-to-project {
+    width: 50%;
+    display: inline-block;
+    align-self: left;
+}
+
+.intro-to-usecase{
+    width: 49.7%;
+    display: inline-block;
+    vertical-align:top;
+    border-left: solid;
+}
+
+.itp-heading {
+    font-family: Quicksand;
+    text-align: center;
+    font-size: 2vw;
+    color: rgb(42, 93, 130);
+
+}
+
+.itp-content {
+    margin-right: 40px;
+    margin-left: 40px;
+    margin-top: 15px;
+    font-family: Quicksand;
+    font-size: .9vw;
+}
+
+.itp-image {
+    width: 45vw;
+    text-align: center;
+}
+
+.home-data-points-cont {
+    text-align: center;
+}
+
+.home-data-points {
+    width: 20vw;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.footer-main {
+  width: 100%;
+  height: auto;
+  background-color: rgb(40, 61, 94);
+  text-align: center;
+  color: rgb(125, 130, 153);
+  padding: 180px;
+  padding-top: 80px;
+  padding-bottom: 70px;
+}
+
+
+
+.footer-inline-left {
+    display: table-cell;
+    width: 50%;
+    text-align: left; 
+}
+
+.footer-inline-right {
+    display: table-cell;
+    width: 49.7%;
+    text-align: left; 
+    border-left: solid;
+    vertical-align: top;
+    text-align: right;
+}
+
+.footer-logo:hover {
+    cursor: pointer;
+}
+
+
+.train-cont {
+    background-color: rgba(248, 232, 250, 1); 
+    color: rgb(40, 61, 94);
+}
+
+.train-navbar {
+    display: inline-block;
+    text-align: center;
+    font-family: Quicksand;
+    font-size: 1.5vw;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border: 3px solid rgb(40, 61, 94);
+    border-bottom: none;
+}
+
+.train-navbar-right {
+    background-color: rgb(40, 61, 94);
+    color: rgba(248, 232, 250, 1);
+
+}
+
+
+.slider-container {
+    display: inline-block;
+    width: 49.5%;
+    padding: 50px
+}
+
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;  
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.inner-window {
+    background-color: rgba(248, 232, 250, 1); 
+    padding-bottom: 80px,
+}
+
+.slider-label {
+    text-align: center;
+    font-family: Quicksand;
+    font-size: 1vw;
+    padding-top: 15px;
+}
+
+.train-navbar-right:hover {
+    font-weight: bold;
+    color: yellow;
+    cursor: pointer;
+}
+
+
+.pqc-cont {
+}
+
+.pqc-cont-text {
+    width: 100%; 
+    text-align: center;
+    font-family: Quicksand;
+    font-size: 1.3vw;
+    border: solid;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.pqc-row-elem {
+    display: inline-block;
+    width: 12.25%;
+    border: solid;
+    text-align: center;
+    padding: 20px;
+}
+
+.pqc-row-elem:hover {
+    font-weight: bold;
+    color: rgba(248, 232, 250, 1);
+    cursor: pointer;
+    background-color: rgb(40, 61, 94);
+}
+

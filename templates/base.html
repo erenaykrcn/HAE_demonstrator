@@ -1,0 +1,87 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/blog/">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style/style.css' %}">
+    <title>HAE</title>
+    <script type="text/javascript" src="{% static 'script/script.js' %}"></script>
+    <script src="https://kit.fontawesome.com/2bfe0272e2.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karla">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster&effect=brick-sign">
+    <link href="https://fonts.googleapis.com/css?family=Cinzel+Decorative|Odibee+Sans|Quicksand|Tangerine&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Advent+Pro|Cinzel|Odibee+Sans&display=swap" rel="stylesheet">
+    <script crossorigin="anonymous" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+
+
+<body>
+
+    
+
+<div class="main-container">
+
+    <div class="home-heading" href="/">Quantum-Classical Autoencoder for Anomaly Detection</div>
+
+    <div class="navbar-home">
+        <div class="navbar-element navbar-element-left" style="border-right: solid;">
+            <a class="navbar-element navbar-element-hover" id="navbar-element-home" style="border-right: solid;" href="/">Home</a>
+            <a class="navbar-element navbar-element-hover" id="navbar-element-train"  href="/train/hae/">Train</a>
+        </div>
+        <div class="navbar-element navbar-element-right">
+            <a class="navbar-element navbar-element-hover" id="navbar-element-evaluate" style="border-right: solid;" href="/evaluate/">Evaluate</a>
+            <a class="navbar-element navbar-element-hover" style="border-right: none;"
+                id="navbar-element-visualize"  href="/visualize/" style="border-right: solid;"
+            >Visualize Data</a>
+        </div>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+    <div class="footer-main">
+        <div class="footer-inline-left">
+            <a class="footer-logo" href="https://www.aisec.fraunhofer.de/de/forschungsabteilungen/CST.html" target=”_blank”>
+            <img style="width: 33%" src="{% static 'homepage/footer_logo.png' %}">
+            <label class="footer-logo" style="width: 100%; text-align: left; margin-top: 40px" >Fraunhofer Institute for Applied and Integrated Security <br> Cognitive Security Technologies</label>
+            </a>
+        </div>
+        <div class="footer-inline-right">
+            <p>Erenay Karacan <br> B.Sc. Electrical and Computer Engineering <br> Technical University of Munich <br><br><u>erenay.karacan@tum.de</u></p> 
+
+            
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+<script type="text/javascript">
+    if ('{{current_page}}') {
+        const elem = document.getElementById('navbar-element-' + '{{current_page}}');
+        elem.style.fontWeight = 'bold';
+    }
+
+
+</script>
+
+
+
+</html>
