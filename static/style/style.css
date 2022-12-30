@@ -67,7 +67,7 @@
 }
 
 .intro-to-usecase{
-    width: 49.7%;
+    width: 49.6%;
     display: inline-block;
     vertical-align:top;
     border-left: solid;
@@ -149,7 +149,7 @@
     font-size: 1.5vw;
     padding-top: 30px;
     padding-bottom: 30px;
-    border: 3px solid rgb(40, 61, 94);
+    
     border-bottom: none;
 }
 
@@ -231,8 +231,8 @@
 
 .pqc-row-elem {
     display: inline-block;
-    width: 12.25%;
-    border: solid;
+    width: 12.15%;
+    border: .15vw solid;
     text-align: center;
     padding: 20px;
 }
