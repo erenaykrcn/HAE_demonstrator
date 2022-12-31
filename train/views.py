@@ -1,10 +1,11 @@
 from django.http import HttpResponse
 from .models import TrainJob
 from .tasks import train_HAE_model_task
+from django.forms.models import model_to_dict
 
 
 def start_training(request):
-	lr = request.GET["learningRate"]
+	lr = 10**int(request.GET["learningRate"])
 	epochs = request.GET["epochs"]
 	batch_size = request.GET["batchSize"]
 	n_samples = request.GET["nSamples"]
@@ -18,7 +19,7 @@ def start_training(request):
 								  pqc=pqc,
 								  model=model,
 		)
-	train_HAE_model_task.delay(job, lr, epochs, batch_size, n_samples, model)
+	train_HAE_model_task.delay(model_to_dict(job))
 
 	return HttpResponse(batch_size)
 

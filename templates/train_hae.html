@@ -72,6 +72,11 @@
 				>Start Training</div>
 			</div>
 
+			<div style="width:100%;">
+				<div class="trainingStarted" id="trainingStarted"
+				>Training Started</div>
+			</div>
+
 		</div>
 	</div>
 
@@ -144,15 +149,13 @@
 
 	$('#startTraining').on("click", () => {
 		$.ajax({
-			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC,
+			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
 		}).done((response) => {
-		  	console.log(response);
 		  	console.log("Traning Started!");
+		  	$('#startTraining')[0].style.display = "none";
+		  	$('#trainingStarted')[0].style.display = "block";
 
-		  	// TODO: Start Ajax loop to check the status
-
-
-
+		  	// TODO: Ajax calls to check the loss values!
 		});
 	});
 

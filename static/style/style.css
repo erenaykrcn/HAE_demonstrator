@@ -267,3 +267,19 @@
         color:  rgb(40, 61, 94);
 }
 
+.trainingStarted {
+    border-radius: 50%;
+    border: solid;
+    width: 150px;
+    height: 150px;
+    text-align: center;
+    line-height: 140px;
+    margin: auto;
+    font-family: Quicksand;
+    font-size: 16px;
+    background-color:  rgba(248, 232, 250, 1);
+    color:  rgb(40, 61, 94);
+    display: none;
+    font-weight: bold;
+}
+

@@ -16,6 +16,13 @@ class TrainJob(models.Model):
 
 	result_path = models.TextField(null=True, blank=True)
 	loss_string = models.TextField(null=True, blank=True)
-	model = models.TextField(default="HAE")
+	model = models.CharField(
+		choices=(
+                  	("HAE", "HAE"),
+                  	("QVC", "QVC"),
+                ),
+		default="HAE",
+		max_length=15,
+		)
 	pqc = models.TextField(default="1")
 

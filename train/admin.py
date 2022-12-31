@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import TrainJob
 
-# Register your models here.
+
+class TrainJobAdmin(admin.ModelAdmin):
+    list_display = ("model", "pqc", "status", "epochs")
+
+
+admin.site.register(TrainJob, TrainJobAdmin)
