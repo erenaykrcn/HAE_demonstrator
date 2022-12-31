@@ -1,0 +1,3 @@
+python -m celery -A HAE_demonstrator worker --pool=solo
+python manage.py runserver
+redis-server (from ubuntu)

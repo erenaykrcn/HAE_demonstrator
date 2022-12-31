@@ -14,47 +14,62 @@
 	<div class="inner-window">
 
 		<div class="slider-container">
-		  <input type="range" min="-10" max="1" value="-4" class="slider" id="learningRate">
-			<p class="slider-label">Learning rate: 10^(-4)</p>
+		  <input type="range" min="-10" max="1" value="-3" class="slider" id="learningRate">
+			<p class="slider-label">Learning rate: 10^(-3)</p>
 		</div>
 
 		<div class="slider-container">
-		  <input type="range" min="1" max="200" value="100" class="slider" id="epochs">
-			<p class="slider-label" id="epochs">Epochs: 100</p>
+		  <input type="range" min="1" max="200" value="50" class="slider" id="epochs">
+			<p class="slider-label" id="epochs">Epochs: 50</p>
+		</div>
+
+		<div class="slider-container">
+		  <input type="range" min="1" max="128" value="32" class="slider" id="batchSize">
+			<p class="slider-label">Batch Size: 32</p>
+		</div>
+
+		<div class="slider-container">
+		  <input type="range" min="10" max="400" value="100" class="slider" id="nSamples">
+			<p class="slider-label" id="epochs">Number of Training Data Points: 100</p>
 		</div>
 		
 		<div class="pqc-cont">
 			<p class="pqc-cont-text">Parametrized Quantum Circuits</p>
 			<div class="pqc-row">
-				<div class="pqc-row-elem">PQC1</div>
-				<div class="pqc-row-elem"
+				<div class="pqc-row-elem" 
 					style="
 					    font-weight: bold;
 					    color: rgba(248, 232, 250, 1);
-					    cursor: pointer;
 					    background-color: rgb(40, 61, 94);
-					" 	
+					"  onclick="changeSelectedPQC(1)">PQC1</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(2)"
 				>PQC2</div>
-				<div class="pqc-row-elem">PQC3</div>
-				<div class="pqc-row-elem">PQC4</div>
-				<div class="pqc-row-elem">PQC5</div>
-				<div class="pqc-row-elem">PQC6</div>
-				<div class="pqc-row-elem">PQC7</div>
-				<div class="pqc-row-elem">PQC8</div>
-			</div>
-			<div>
-				<div class="pqc-row-elem">PQC9</div>
-				<div class="pqc-row-elem">PQC10</div>
-				<div class="pqc-row-elem">PQC11</div>
-				<div class="pqc-row-elem">PQC12</div>
-				<div class="pqc-row-elem">PQC13</div>
-				<div class="pqc-row-elem">PQC14</div>
-				<div class="pqc-row-elem">PQC15</div>
-				<div class="pqc-row-elem">PQC16</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(3)">PQC3</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(4)">PQC4</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(5)">PQC5</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(6)">PQC6</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
 			</div>
 
-			<div style="text-align: center;">
-				<img style="width: 50%" src="/static/train_hae/pqc1.png">
+			<div style="text-align: left; display: inline-block; width: 50%">
+				<img style="width: 100%" src="/static/train_hae/pqc1.png" id="qc_image">
+			</div>
+			<div style="text-align: center; display: inline-block; width: 49.5%; vertical-align: top;
+						padding-top: 60px;">
+				<p
+					style="
+						width: 100%;
+						font-size: 1.5vw;
+					"
+				>PQC Descriptors</p>
+
+
+			</div>
+
+			<div style="width:100%;">
+				<div class="startTraining" id="startTraining"
+				>Start Training</div>
 			</div>
 
 		</div>
@@ -63,23 +78,83 @@
 </div>
 
 <script>
+	let selectedPQC = 1;
+
+
 	const learningRate = document.getElementById('learningRate');
 	learningRate.addEventListener('change', updateValueLR);
-
 	function updateValueLR(e) {
 	  document.getElementsByClassName('slider-label')[0].innerText = "Learning rate: 10^(" + e.target.value + ")";
 	}
-
 	const epochs = document.getElementById('epochs');
 	epochs.addEventListener('change', updateValueE);
-
 	function updateValueE(e) {
 	  document.getElementsByClassName('slider-label')[1].innerText = "Epochs: " + e.target.value;
 	}
+	const batchSize = document.getElementById('batchSize');
+	batchSize.addEventListener('change', updateValueBS);
+	function updateValueBS(e) {
+	  document.getElementsByClassName('slider-label')[2].innerText = "Batch Size: " + e.target.value;
+	}
+	const nSamples = document.getElementById('nSamples');
+	nSamples.addEventListener('change', updateValueNS);
+	function updateValueNS(e) {
+	  document.getElementsByClassName('slider-label')[3].innerText = "Number of Training Data Points: " + e.target.value;
+	}
+
 
 	function goQVC() {
 		window.location.href='/train/qvc/';
 	}
+
+	function hoverPQC(pqc_el) {
+		pqc_el.style.fontWeight = "bold";
+		pqc_el.style.color = "rgba(248, 232, 250, 1)";
+		pqc_el.style.backgroundColor = "rgb(40, 61, 94)";
+	}
+
+	function unHoverPQC(pqc_el) {
+		pqc_el.style.fontWeight = "normal";
+		pqc_el.style.color = "rgb(40, 61, 94)";
+		pqc_el.style.backgroundColor = "rgba(248, 232, 250, 1)";
+	}
+
+	function handleMouseOver(e) {hoverPQC(e.target);}
+	function handleMouseOut (e) {unHoverPQC(e.target);}
+
+	function changeSelectedPQC(pqc) {
+		const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
+		const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+
+		old_pqc.addEventListener("mouseover", handleMouseOver);
+		old_pqc.addEventListener("mouseout", handleMouseOut);
+
+		pqc_el.removeEventListener("mouseover", handleMouseOver);
+		pqc_el.removeEventListener("mouseout", handleMouseOut);
+
+		hoverPQC(pqc_el)
+		unHoverPQC(old_pqc)
+
+		selectedPQC = pqc;
+
+		const imgElem = document.getElementById("qc_image")
+		imgElem.src = "/static/train_hae/pqc" + pqc + ".png"
+
+	}
+
+	$('#startTraining').on("click", () => {
+		$.ajax({
+			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC,
+		}).done((response) => {
+		  	console.log(response);
+		  	console.log("Traning Started!");
+
+		  	// TODO: Start Ajax loop to check the status
+
+
+
+		});
+	});
 
 
 </script>

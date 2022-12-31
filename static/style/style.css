@@ -223,7 +223,7 @@
     width: 100%; 
     text-align: center;
     font-family: Quicksand;
-    font-size: 1.3vw;
+    font-size: 1.8vw;
     border: solid;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -242,5 +242,28 @@
     color: rgba(248, 232, 250, 1);
     cursor: pointer;
     background-color: rgb(40, 61, 94);
+}
+
+
+.startTraining {
+    border-radius: 50%;
+    border: solid;
+    width: 150px;
+    height: 150px;
+    text-align: center;
+    line-height: 140px;
+    margin: auto;
+    font-family: Quicksand;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: rgb(40, 61, 94);
+    color: rgba(248, 232, 250, 1);
+
+}
+
+.startTraining:hover {
+        font-weight:  bold;
+        background-color:  rgba(248, 232, 250, 1);
+        color:  rgb(40, 61, 94);
 }
 
