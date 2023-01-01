@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import TrainJob
 from .tasks import train_HAE_model_task
 from django.forms.models import model_to_dict
@@ -21,8 +21,11 @@ def start_training(request):
 		)
 	train_HAE_model_task.delay(model_to_dict(job))
 
-	return HttpResponse(batch_size)
+	return HttpResponse(job.id)
 
 
 def check_training(request):
-	return HttpResponse("")
+	job_id = request.GET["job_id"]
+	job = TrainJob.objects.get(id=job_id)
+
+	return JsonResponse(model_to_dict(job))

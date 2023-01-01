@@ -147,17 +147,43 @@
 
 	}
 
+	function checkStatus(jobId) {
+		let success = false;
+				$.ajax({
+					url: "/train/check-training?job_id=" + jobId ,
+				}).done((response) => {
+					success = response["status"] == "completed";
+					console.log(response["loss_string"])
+					// TODO: Bunch of other stuff
+
+				});
+		return success;
+	}
+
 	$('#startTraining').on("click", () => {
 		$.ajax({
 			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
+
 		}).done((response) => {
 		  	console.log("Traning Started!");
 		  	$('#startTraining')[0].style.display = "none";
 		  	$('#trainingStarted')[0].style.display = "block";
+		  	let success = false;
 
-		  	// TODO: Ajax calls to check the loss values!
+		  	const checkInterval = setInterval(() => {
+		  		success = checkStatus(response);
+
+		  		if (success) {
+		  			clearInterval(checkInterval);
+		  			// TODO: Bunch of other stuff
+		  		};
+		  	} ,5000);
+
+		  	
+
 		});
 	});
+
 
 
 </script>
