@@ -3,7 +3,7 @@
 	height:auto;
     min-height: 100vh;
     border-radius: 5px;
-    background: linear-gradient(260deg, rgba(26, 68, 135, 1), rgba(248, 232, 250, 1));
+    background: rgba(248, 232, 250, 1);
     background-size: 200% 200%;
     -webkit-animation: back-ani 10s ease infinite;
     -moz-animation: back-ani 10s ease infinite;
@@ -279,7 +279,6 @@
     font-size: 16px;
     background-color:  rgba(248, 232, 250, 1);
     color:  rgb(40, 61, 94);
-    display: none;
     font-weight: bold;
 }
 

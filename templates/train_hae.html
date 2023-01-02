@@ -35,7 +35,7 @@
 		
 		<div class="pqc-cont">
 			<p class="pqc-cont-text">Parametrized Quantum Circuits</p>
-			<div class="pqc-row">
+			<div class="pqc-row" style="border-bottom: solid; padding-bottom: 20px">
 				<div class="pqc-row-elem" 
 					style="
 					    font-weight: bold;
@@ -50,31 +50,56 @@
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(6)">PQC6</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(9)">PQC9</div>
 			</div>
 
 			<div style="text-align: left; display: inline-block; width: 50%">
 				<img style="width: 100%" src="/static/train_hae/pqc1.png" id="qc_image">
 			</div>
 			<div style="text-align: center; display: inline-block; width: 49.5%; vertical-align: top;
-						padding-top: 60px;">
+						padding-top: 60px;
+    					border-left: solid; padding-left: 50px">
 				<p
 					style="
 						width: 100%;
 						font-size: 1.5vw;
+    					font-family: Quicksand;
 					"
 				>PQC Descriptors</p>
 
+				<div style="text-align: left; font-family: Quicksand;">
+					<div style="display: inline-block; width: 49.5%; padding: 20px; padding-top: 0">
+						<p style="font-size: 20px">1) Sim Expressivity:</p>
+						<p>We use the definition defined in <a href="https://arxiv.org/abs/1905.10876" target="_blank" style="color: rgb(42, 93, 130); font-weight: bold" >this paper</a> as: <br> <img src="/static/train_hae/KL_div.png" style="width: 80%"><br> Whereas KL is the Kullback-Leibler divergence and F is the randomly sampled fidelities. We use 1000 samples to construct the histogram to get the probability density with respect to the fidelities. We sample from the uniform distribution to construct the Haar random states. <br>The resulting histogram for the given PQC: <img src="/static/train_hae/hist/hist_pqc1.png" id="KL_im" style="width: 100%"><br><p id="KL_div" style="font-size: 18px; font-weight:bold">Resulting KL Divergence: </p> </p>
+					</div>
+					<div style="display: inline-block; width: 49.5%; vertical-align: top">
+						<p style="font-size: 20px">2) Entangling Capacity:</p>
+						<p>We use the definition defined in <a href="https://arxiv.org/abs/1905.10876" target="_blank" style="color: rgb(42, 93, 130); font-weight: bold" >this paper</a> for entangling capacity, widely known as Meyer-Wallach Measure as: <br> <img src="/static/train_hae/MW.png" style=" width: 80%"><br> Whereas ρ_k is the density matrix of the Quantum Circuit with the kth qubit traced out. We sample 1000 parameters and average the entangling capacity over the samples. <br> <p id="MW" style="font-size: 18px; font-weight:bold">Resulting Entangling Capacity: </p></p>
+					</div>
+				</div>
 
 			</div>
 
-			<div style="width:100%;">
-				<div class="startTraining" id="startTraining"
+			<div style="width:100%; margin-bottom: 50px; border-bottom: solid; padding: 30px;border-top: solid;
+    					font-family: Quicksand;" id="startTraining">
+				<div class="startTraining" 
 				>Start Training</div>
 			</div>
 
-			<div style="width:100%;">
-				<div class="trainingStarted" id="trainingStarted"
+			<div style="width:100%;margin-bottom: 50px; border-bottom: solid; padding: 30px;border-top: solid; display: none" id="trainingStarted">
+				<div class="trainingStarted"
 				>Training Started</div>
+			</div>
+
+
+			<div style="min-height: 700px; display: none" id="training-log-cont">
+				<div style="display: inline-block; width: 45%; padding-left: 50px;  vertical-align: top">
+					<img id="graph" src="/static/train_hae/loss_plot/blank.png" style="width: 100%">
+				</div>
+				<div style="display: inline-block; width: 49.5%; text-align: center; vertical-align: top">
+					<p style="font-size: 28px; font-family: 'Quicksand'; font-weight: bold" >Training Log:</p>
+					<p style="font-size: 23px; font-family: 'Quicksand';" id="log-content"></p>
+				</div>
 			</div>
 
 		</div>
@@ -84,7 +109,32 @@
 
 <script>
 	let selectedPQC = 1;
+	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
+	$("#MW")[0].innerText = "Resulting Entangling Capacity: {{ MW_measure1 }}";
 
+	SIM_expr = {
+		"SIM_expr1": "{{ SIM_expr1 }}",
+		"SIM_expr2": "{{ SIM_expr2 }}",
+		"SIM_expr3": "{{ SIM_expr3 }}",
+		"SIM_expr4": "{{ SIM_expr4 }}",
+		"SIM_expr5": "{{ SIM_expr5 }}",
+		"SIM_expr6": "{{ SIM_expr6 }}",
+		"SIM_expr7": "{{ SIM_expr7 }}",
+		"SIM_expr8": "{{ SIM_expr8 }}",
+		"SIM_expr9": "{{ SIM_expr9 }}",
+	}
+
+	MW_measure = {
+		"MW_measure1": "{{ MW_measure1 }}",
+		"MW_measure2": "{{ MW_measure2 }}",
+		"MW_measure3": "{{ MW_measure3 }}",
+		"MW_measure4": "{{ MW_measure4}}",
+		"MW_measure5": "{{ MW_measure5 }}",
+		"MW_measure6": "{{ MW_measure6 }}",
+		"MW_measure7": "{{ MW_measure7 }}",
+		"MW_measure8": "{{ MW_measure8 }}",
+		"MW_measure9": "{{ MW_measure9 }}",
+	}
 
 	const learningRate = document.getElementById('learningRate');
 	learningRate.addEventListener('change', updateValueLR);
@@ -137,27 +187,39 @@
 		pqc_el.removeEventListener("mouseover", handleMouseOver);
 		pqc_el.removeEventListener("mouseout", handleMouseOut);
 
-		hoverPQC(pqc_el)
-		unHoverPQC(old_pqc)
+		hoverPQC(pqc_el);
+		unHoverPQC(old_pqc);
 
 		selectedPQC = pqc;
 
-		const imgElem = document.getElementById("qc_image")
-		imgElem.src = "/static/train_hae/pqc" + pqc + ".png"
+		const imgElem = document.getElementById("qc_image");
+		imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
+
+		$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png"
+		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
+		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
 
 	}
 
+
+	let success = false;
 	function checkStatus(jobId) {
-		let success = false;
 				$.ajax({
 					url: "/train/check-training?job_id=" + jobId ,
 				}).done((response) => {
-					success = response["status"] == "completed";
-					console.log(response["loss_string"])
-					// TODO: Bunch of other stuff
+					loss_string = response["loss_string"];
+					loss_list = loss_string.split(";");
+					console.log(loss_list);
+					$("#graph")[0].src = "/static/train_hae/loss_plot/" + response["id"] + "_" + response["epoch"] + ".png";
+					let innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Epochs: " + response["epochs"] + "<br>";
 
+					for (let i=0;i<loss_list.length-1;i++) {
+						innerHTML = innerHTML + "-> Epoch[" + (i+1) + "/"+ response["epochs"] +"]: "+ loss_list[i] +" <br>"
+					}
+
+					$("#log-content")[0].innerHTML = innerHTML,
+					success = response["status"] == "completed";
 				});
-		return success;
 	}
 
 	$('#startTraining').on("click", () => {
@@ -168,14 +230,16 @@
 		  	console.log("Traning Started!");
 		  	$('#startTraining')[0].style.display = "none";
 		  	$('#trainingStarted')[0].style.display = "block";
-		  	let success = false;
+		  	$("#training-log-cont")[0].style.display = "block";
+		  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Epochs: " + epochs.value + "<br>"
 
 		  	const checkInterval = setInterval(() => {
-		  		success = checkStatus(response);
+		  		checkStatus(response);
 
+				console.log(success)
 		  		if (success) {
 		  			clearInterval(checkInterval);
-		  			// TODO: Bunch of other stuff
+		  			// TODO: Display Training Complete button
 		  		};
 		  	} ,5000);
 
@@ -184,6 +248,7 @@
 		});
 	});
 
+	// TODO: Check if theres any pending jobs
 
 
 </script>
