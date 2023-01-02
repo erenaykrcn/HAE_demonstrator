@@ -2,9 +2,13 @@ import os
 dirname = os.path.dirname(__file__)
 
 from celery import shared_task
+from celery.bin import amqp
 from .models import TrainJob
 
 import sys
+sys.path.append(os.path.join(dirname, '../'))
+from HAE_demonstrator.celery import app
+
 sys.path.append(os.path.join(dirname, '../../HAE/modules/'))
 from HAE.HAE import HAE
 from QVC_autoencoder.QVC_autoencoder import QVCAutoencoder
@@ -12,6 +16,9 @@ from QVC_autoencoder.QVC_autoencoder import QVCAutoencoder
 
 @shared_task()
 def train_HAE_model_task(job):
+	amqp1 = amqp.amqp(app = app)
+	# TODO: purge all ongoing tasks
+	#amqp1.run('queue.purge', '')
 	model = job["model"]
 
 	pqc = int(job["pqc"])
