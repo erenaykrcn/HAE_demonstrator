@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import home_page, train_page
+from .views import home_page, train_page, train_page_qvc
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", home_page),
     path("train/hae/", train_page),
+    path("train/qvc/", train_page_qvc),
     path("train/", include('train.urls')),
 ] 
 

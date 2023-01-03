@@ -19,3 +19,14 @@ def train_page(request):
 
 
     return render(request, "train_hae.html", dic)
+
+
+def train_page_qvc(request):
+    dic = {
+            "current_page": "train",
+    }
+    dic = dic | MW_measure
+    dic = dic | SIM_expr
+
+
+    return render(request, "train_qvc.html", dic)
