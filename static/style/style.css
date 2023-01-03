@@ -163,7 +163,7 @@
 .slider-container {
     display: inline-block;
     width: 49.5%;
-    padding: 50px
+    padding: 50px;
 }
 
 
@@ -280,5 +280,24 @@
     background-color:  rgba(248, 232, 250, 1);
     color:  rgb(40, 61, 94);
     font-weight: bold;
+}
+
+.bullet-point-select {
+    width:30px; 
+    height:30px; 
+    border-radius:50%; 
+    border: solid; 
+    display:inline-block;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.bullet-point-select:hover {
+    background-color: rgb(40, 61, 94);
+}
+
+.training-complete {
+    font-family: Quicksand;
+    color: green;
 }
 

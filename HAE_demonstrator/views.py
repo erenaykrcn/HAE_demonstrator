@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .constants import MW_measure, SIM_expr
+from .constants import MW_measure, SIM_expr, N_PARAMS
 import json
 
 
@@ -19,3 +19,15 @@ def train_page(request):
 
 
     return render(request, "train_hae.html", dic)
+
+
+def train_page_qvc(request):
+    dic = {
+            "current_page": "train",
+    }
+    dic = dic | MW_measure
+    dic = dic | SIM_expr
+    dic = dic | N_PARAMS
+
+
+    return render(request, "train_qvc.html", dic)

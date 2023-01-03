@@ -5,32 +5,45 @@
 
 <div class="train-cont">
 	<div style="width: 50%; border: none" 
-		class="train-navbar train-navbar-left"
+		class="train-navbar train-navbar-right" onclick="goHAE()"
 	>HAE</div>
 	<div style="width: 49.6%" 
-		class="train-navbar train-navbar-right" onclick="goQVC()"
+		class="train-navbar train-navbar-left" 
 	>QVC</div>
 
 	<div class="inner-window">
 
-		<div class="slider-container">
-		  <input type="range" min="-10" max="1" value="-3" class="slider" id="learningRate">
-			<p class="slider-label">Learning rate: 10^(-3)</p>
+		<div class="slider-container" style="vertical-align: top; text-align: center;padding-top: 15px;">
+		  	<div>
+		  		<div class="slider-label" style="display:inline-block; margin-right: 80px;">Random</div>
+		  		<div class="slider-label" style="display:inline-block;">Custom</div>
+		  	</div>
+		  	<div style="margin-right: 100px; background-color: rgb(40, 61, 94);" class="bullet-point-select" onclick="ipClick(0)" id="random"></div>
+		  	<div class="bullet-point-select" id="custom" onclick="ipClick(1)" ></div>
+		  	<div class="slider-label">Initial Point</div>
+		  	<div id="input-wrapper" style="display: none"><input style="border-radius: 15px;" id="custom-value" value="[0,0,0,0]">
+		  	<label>Make sure that the number of params of the selected PQC and the given values match and the values are between -π and π<br>Please use the following format: [0.1,-0.8,1,1]</label></div>
 		</div>
 
-		<div class="slider-container">
-		  <input type="range" min="1" max="200" value="50" class="slider" id="epochs">
-			<p class="slider-label" id="epochs">Epochs: 50</p>
-		</div>
 
 		<div class="slider-container">
-		  <input type="range" min="1" max="128" value="32" class="slider" id="batchSize">
-			<p class="slider-label">Batch Size: 32</p>
+		  <input type="range" min="1" max="200" value="100" class="slider" id="max_iter">
+			<p class="slider-label" id="max_iter_label">Max Number of Iterations: 100</p>
 		</div>
 
 		<div class="slider-container">
 		  <input type="range" min="10" max="400" value="100" class="slider" id="nSamples">
-			<p class="slider-label" id="epochs">Number of Training Data Points: 100</p>
+			<p class="slider-label" id="n_samples_label">Number of Training Data Points: 100</p>
+		</div>
+
+		<div class="slider-container"  style="vertical-align: top; text-align: center;padding-top: 15px;">
+		  	<div>
+		  		<div class="slider-label" style="display:inline-block; margin-right: 80px;">Binary (Normal-Abnormal)</div>
+		  		<div class="slider-label" style="display:inline-block;">Multi-Class (Classes 1-7)</div>
+		  	</div>
+		  	<div style="margin-right: 100px; background-color: rgb(40, 61, 94);" class="bullet-point-select" id="binary" onclick="clClick(0)"></div>
+		  	<div class="bullet-point-select" id="multi"  onclick="clClick(1)" ></div>
+		  	<div class="slider-label">Classification</div>
 		</div>
 		
 		<div class="pqc-cont">
@@ -87,8 +100,7 @@
 			</div>
 
 			<div style="width:100%;margin-bottom: 50px; border-bottom: solid; padding: 30px;border-top: solid; display: none" id="trainingStarted">
-				<div class="trainingStarted"
-				>Training Started</div>
+				<div class="trainingStarted">Training Started</div>
 			</div>
 
 
@@ -109,6 +121,8 @@
 
 <script>
 	let selectedPQC = 1;
+	let selectedIP = "random";
+	let selectedCL = "binary";
 	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
 	$("#MW")[0].innerText = "Resulting Entangling Capacity: {{ MW_measure1 }}";
 
@@ -136,30 +150,58 @@
 		"MW_measure9": "{{ MW_measure9 }}",
 	}
 
-	const learningRate = document.getElementById('learningRate');
-	learningRate.addEventListener('change', updateValueLR);
-	function updateValueLR(e) {
-	  document.getElementsByClassName('slider-label')[0].innerText = "Learning rate: 10^(" + e.target.value + ")";
+	N_PARAMS = {
+		"N_PARAMS1": "{{ N_PARAMS1 }}",
+		"N_PARAMS2": "{{ N_PARAMS2 }}",
+		"N_PARAMS3": "{{ N_PARAMS3 }}",
+		"N_PARAMS4": "{{ N_PARAMS4 }}",
+		"N_PARAMS5": "{{ N_PARAMS5 }}",
+		"N_PARAMS6": "{{ N_PARAMS6 }}",
+		"N_PARAMS7": "{{ N_PARAMS7 }}",
+		"N_PARAMS8": "{{ N_PARAMS8 }}",
+		"N_PARAMS9": "{{ N_PARAMS9 }}",
 	}
-	const epochs = document.getElementById('epochs');
-	epochs.addEventListener('change', updateValueE);
+
+	function ipClick(s) {
+		if (s == 0) {
+			$("#random")[0].style.backgroundColor = "rgb(40, 61, 94)";
+			$("#custom")[0].style.backgroundColor = "rgba(248, 232, 250, 1)";
+			selectedIP = "random";
+			$("#input-wrapper")[0].style.display = "none";
+		} else if (s == 1) {
+			$("#custom")[0].style.backgroundColor = "rgb(40, 61, 94)";
+			$("#random")[0].style.backgroundColor = "rgba(248, 232, 250, 1)";
+			selectedIP = "custom";
+			$("#input-wrapper")[0].style.display = "block";
+		}
+	}
+
+	function clClick(s) {
+		if (s==0) {
+			$("#binary")[0].style.backgroundColor = "rgb(40, 61, 94)";
+			$("#multi")[0].style.backgroundColor = "rgba(248, 232, 250, 1)";
+			selectedCL = "binary";
+		} else if (s==1) {
+			$("#binary")[0].style.backgroundColor = "rgba(248, 232, 250, 1)";
+			$("#multi")[0].style.backgroundColor = "rgb(40, 61, 94)";
+			selectedCL = "multi";
+		}
+	}
+
+	const max_iter = document.getElementById('max_iter');
+	max_iter.addEventListener('change', updateValueE);
 	function updateValueE(e) {
-	  document.getElementsByClassName('slider-label')[1].innerText = "Epochs: " + e.target.value;
+	  $("#max_iter_label")[0].innerText = "Max Number of Iterations: " + e.target.value;
 	}
-	const batchSize = document.getElementById('batchSize');
-	batchSize.addEventListener('change', updateValueBS);
-	function updateValueBS(e) {
-	  document.getElementsByClassName('slider-label')[2].innerText = "Batch Size: " + e.target.value;
-	}
+	
 	const nSamples = document.getElementById('nSamples');
 	nSamples.addEventListener('change', updateValueNS);
 	function updateValueNS(e) {
-	  document.getElementsByClassName('slider-label')[3].innerText = "Number of Training Data Points: " + e.target.value;
+	  $("#n_samples_label")[0].innerText = "Number of Training Data Points: " + e.target.value;
 	}
 
-
-	function goQVC() {
-		window.location.href='/train/qvc/';
+	function goHAE() {
+		window.location.href='/train/hae/';
 	}
 
 	function hoverPQC(pqc_el) {
@@ -199,6 +241,12 @@
 		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
 		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
 
+		let newInputValue = [];
+		for (let i=0; i<N_PARAMS["N_PARAMS" + selectedPQC]; i++) {
+			newInputValue.push(0)
+		}
+		$("#custom-value")[0].value = "[" + newInputValue.toString() + "]";
+
 	}
 
 
@@ -211,26 +259,26 @@
 					loss_string = response["loss_string"];
 					loss_list = loss_string.split(";");
 					console.log(loss_list);
+
 					$("#graph")[0].src = "/static/train_hae/loss_plot/" + response["id"] + "_" + response["epoch"] + ".png";
-					let innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Epochs: " + response["epochs"] + "<br>PQC: "+ selectedPQC + "<br>";
+					let innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Max Iter: " + response["max_iter"] + "<br>PQC: "+ selectedPQC + "<br>";
 
 					for (let i=0;i<loss_list.length-1;i++) {
-						innerHTML = innerHTML + "-> Epoch[" + (i+1) + "/"+ response["epochs"] +"]: "+ loss_list[i] +" <br>"
+						innerHTML = innerHTML + "-> Evaluations[" + (i+1)*3 + "/"+ (parseInt(response["max_iter"])*3).toString() +"]: "+ loss_list[i] +" <br>"
 					}
 
 					success = response["status"] == "completed";
-
 					if (success) {
 						result_path = response["result_path"];
 			  			$(".trainingStarted")[0].innerText = "Training Done!";
 			  			$(".trainingStarted")[0].style.color = "green";
 
 			  			let res_path = result_path;
-			  			res_path = res_path.split(".pt");
+			  			res_path = res_path.split(".tx");
 			  			res_path = res_path[res_path.length - 2];
 			  			res_path = res_path.split("_");
 			  			min_loss = res_path[res_path.length - 1];
-			  			innerHTML = innerHTML + "<br><p class='training-complete'>Training Completed. Min Loss Found: " + min_loss + "<br> Result Name (Please note it down for Eval step): loss_" + min_loss + ".pt</p>";
+			  			innerHTML = innerHTML + "<br><p class='training-complete'>Training Completed. Min Loss Found: " + min_loss + "<br> Result Name (Please note it down for Eval step): loss_" + min_loss + ".txt</p>";
 					}
 
 					$("#log-content")[0].innerHTML = innerHTML;
@@ -238,23 +286,43 @@
 	}
 
 	$('#startTraining').on("click", () => {
+		let initial_point = "random";
+		if (selectedIP=="custom") {
+			const given_custom = $("#custom-value")[0].value;
+			try {
+				initial_point = JSON.parse(given_custom);
+			} catch (error) {
+				alert(error);
+				return;
+			}
+			if (initial_point.length.toString() !== N_PARAMS["N_PARAMS" + selectedPQC]) {
+				alert("Please match the number of parameters in the given custom initial point. " + N_PARAMS["N_PARAMS" + selectedPQC] + " parameters are needed.");
+				return;
+			}
+
+			for (let i=0;i<initial_point.length; i++) {
+				if (parseFloat(initial_point[i]) > Math.PI || parseFloat(initial_point[i]) < -Math.PI ) {
+					alert("Invalid value for one or more of the given initial point parameters. Values have to be between -π and π!");
+					return;
+				}
+			}
+			initial_point = given_custom;
+		}
+
 		$.ajax({
-			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
+			url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=QVC" ,
 
 		}).done((response) => {
 		  	console.log("Traning Started!");
 		  	$('#startTraining')[0].style.display = "none";
 		  	$('#trainingStarted')[0].style.display = "block";
 		  	$("#training-log-cont")[0].style.display = "block";
-		  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Epochs: " + epochs.value + "<br>PQC: "+ selectedPQC
+		  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Max Iter: " + max_iter.value + "<br>PQC: "+ selectedPQC +"<br>Initializing...";
 
 		  	const checkInterval = setInterval(() => {
 		  		checkStatus(response["id"]);
-
-				console.log(success)
-		  		if (success) {
+		  		if (success && result_path) {
 		  			clearInterval(checkInterval);
-
 		  		};
 		  	} ,1500);
 

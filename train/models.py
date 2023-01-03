@@ -7,6 +7,10 @@ class TrainJob(models.Model):
 	batch_size = models.IntegerField(default="32")
 	learning_rate = models.FloatField(default=1e-3)
 
+	is_binary = models.BooleanField(default=True)
+	initial_point = models.TextField(blank=True, null=True)
+	max_iter = models.IntegerField(default=100)
+
 	status = models.CharField(max_length=15,
                   choices=(
                   	("pending", "pending"),

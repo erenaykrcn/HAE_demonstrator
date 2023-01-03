@@ -22,3 +22,15 @@ SIM_expr = {
 	"SIM_expr9": 4.39,
 }
 
+N_PARAMS = {
+	"N_PARAMS1": 4,
+	"N_PARAMS2": 4,
+	"N_PARAMS3": 8,
+	"N_PARAMS4": 8,
+	"N_PARAMS5": 8,
+	"N_PARAMS6": 8,
+	"N_PARAMS7": 8,
+	"N_PARAMS8": 16,
+	"N_PARAMS9": 16,
+}
+

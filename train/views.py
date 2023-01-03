@@ -8,28 +8,42 @@ import numpy as np
 import pandas as pd
 
 from .models import TrainJob
-from .tasks import train_HAE_model_task
+from .tasks import train_model_task
 from django.forms.models import model_to_dict
 
 
 def start_training(request):
-	lr = 10**int(request.GET["learningRate"])
-	epochs = request.GET["epochs"]
-	batch_size = request.GET["batchSize"]
-	n_samples = request.GET["nSamples"]
-	pqc = request.GET["pqc"]
-	model = request.GET["model"]
+	if request.GET["model"] == "HAE":
+		lr = 10**int(request.GET["learningRate"])
+		epochs = request.GET["epochs"]
+		batch_size = request.GET["batchSize"]
+		n_samples = request.GET["nSamples"]
+		pqc = request.GET["pqc"]
 
-	job = TrainJob.objects.create(epochs=int(epochs),
-								  n_samples=int(n_samples),
-								  batch_size=int(batch_size),
-								  learning_rate=float(lr),
-								  pqc=pqc,
-								  model=model,
-		)
-	train_HAE_model_task.delay(model_to_dict(job))
+		job = TrainJob.objects.create(epochs=int(epochs),
+									  n_samples=int(n_samples),
+									  batch_size=int(batch_size),
+									  learning_rate=float(lr),
+									  pqc=pqc,
+									  model="HAE",
+			)
+	elif request.GET["model"] == "QVC":
+		max_iter = request.GET["max_iter"]
+		n_samples = request.GET["nSamples"]
+		pqc = request.GET["pqc"]
+		is_binary = request.GET["classification"] == "binary"
+		initial_point = request.GET["initial_point"]
 
-	return HttpResponse(job.id)
+		job = TrainJob.objects.create(max_iter=int(max_iter),
+									  n_samples=int(n_samples),
+									  is_binary=is_binary,
+									  initial_point=None if initial_point=="random" else initial_point,
+									  pqc=pqc,
+									  model="QVC",
+			)
+	train_model_task.delay(model_to_dict(job))
+	dic = model_to_dict(job)
+	return JsonResponse(dic)
 
 
 def check_training(request):
@@ -61,6 +75,6 @@ def check_training(request):
 
 		path = f"../static/train_hae/loss_plot/{job_id}_{epochs[-1]}.png"
 		fig.write_image(os.path.join(dirname, path))
-		dic["epoch"] = epochs[-1] 
+		dic["epoch"] = epochs[-1]
 
 	return JsonResponse(dic)
