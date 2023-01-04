@@ -301,3 +301,15 @@
     color: green;
 }
 
+.file_list {
+    border:solid; 
+    padding: 10px; 
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.file_list:hover {
+    background-color:  rgb(40, 61, 94);
+    color:  rgba(248, 232, 250, 1);
+}
+

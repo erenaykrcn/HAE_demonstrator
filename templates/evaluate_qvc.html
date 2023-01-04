@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<div class="train-cont">
+	<div style="width: 50%; border: none" 
+		class="train-navbar train-navbar-right" onclick="goHAE()"
+	>HAE</div>
+	<div style="width: 49.6%" 
+		class="train-navbar train-navbar-left" 
+	>QVC</div>
+
+	<div class="inner-window" >
+		<div class="pqc-cont">
+			<p class="pqc-cont-text">Parametrized Quantum Circuits</p>
+			<div class="pqc-row" style="border-bottom: solid; padding-bottom: 20px">
+				<div class="pqc-row-elem" 
+					style="
+					    font-weight: bold;
+					    color: rgba(248, 232, 250, 1);
+					    background-color: rgb(40, 61, 94);
+					"  onclick="changeSelectedPQC(1)">PQC1</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(2)"
+				>PQC2</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(3)">PQC3</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(4)">PQC4</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(5)">PQC5</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(6)">PQC6</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(9)">PQC9</div>
+			</div>
+
+			<div style="display: inline-block; width: 50%; border-right: solid; padding-bottom: 50px;">
+				<div style="text-align: left;">
+					<img style="width: 100%" src="/static/train_hae/pqc1.png" id="qc_image">
+				</div>
+				<div style="text-align: center; vertical-align: top;
+							padding-top: 60px;
+	    					border-left: solid;">
+					<p
+						style="
+							width: 100%;
+							font-size: 1.5vw;
+	    					font-family: Quicksand;
+						"
+					>PQC Descriptors</p>
+
+					<div style="text-align: center; font-family: Quicksand;">
+						<div style="display: inline-block; width: 49.5%; padding: 20px; padding-top: 0">
+							<p style="font-size: 20px">1) Sim Expressivity:</p><br>
+							<img src="/static/train_hae/KL_div.png" style="width: 80%"><br><br><p id="KL_div" style="font-size: 18px; font-weight:bold">KL Divergence: </p> </p>
+						</div>
+						<div style="display: inline-block; width: 49.5%; vertical-align: top; padding-top: 0;">
+							<p style="font-size: 20px">2) Entangling Capacity:</p>
+							<img src="/static/train_hae/MW.png" style=" width: 80%"><br><br> <p id="MW" style="font-size: 18px; font-weight:bold">Resulting Entangling Capacity: </p></p>
+						</div>
+						<img src="/static/train_hae/hist/hist_pqc1.png" id="KL_im" style="width: 80%">
+					</div>
+				</div>
+			</div>
+
+			<div style="display: inline-block; width: 49.5%; vertical-align: top; font-family: 'Quicksand'; text-align: center;">
+
+
+				<div class="slider-container" style="width: 100%">
+				  <input type="range" min="10" max="1000" value="200" class="slider" id="nSamples">
+					<p class="slider-label" id="nSamplesText">Number of Test Data Points: 200</p>
+				</div>
+
+				<div style="display: inline-block; width: 49.5%">
+					<p style="font-family: 'Quicksand'; font-size: 20px">Models Trained on Binary Classification</p>
+					<div id="binary_files_wrap"></div>
+				</div>
+				<div style="display: inline-block; width: 49.5%; vertical-align:top">
+					<p style="font-family: 'Quicksand'; font-size: 20px">Models Trained on Multi-Class Classification</p>
+					<div id="multi_files_wrap"></div>
+				</div>
+
+				<div style="" id="result-block">
+					<br><br><br><br><br>
+					<p style="text-align: center; font-weight: bold; font-size: 20px">Results of the Evaluation:</p>
+					<div style="font-family: 'Quicksand'; width: 49.5%; display: inline-block; text-align:right; border-right: solid; padding-right: 15px; font-size: 18px">
+						QVC Results: <br><br>
+						-> Precision: <p style="display: inline;" id="precision-qvc">1</p> <br> 
+						-> Recall: <p style="display: inline;" id="recall-qvc">1</p> <br>
+						-> F1 Score: <p style="display: inline;" id="f1-qvc">1</p> <br>
+					</div>
+
+					<div style="font-family: 'Quicksand'; width: 49.5%; display: inline-block; text-align: left; padding-left: 10px; font-size: 18px">
+						Classical Results: <br><br>
+						-> Precision: <p style="display: inline;" id="precision-cl" >1</p> <br> 
+						-> Recall: <p style="display: inline;" id="recall-cl" >1</p> <br>
+						-> F1 Score: <p style="display: inline;" id="f1-cl">1</p> <br>
+					</div>
+					<br><br><br>
+					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 80%">
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	let selectedPQC = 1;
+	$("#KL_div")[0].innerText = "KL Divergence: {{ SIM_expr1 }}";
+	$("#MW")[0].innerText = "Entangling Capacity: {{ MW_measure1 }}";
+
+	const SIM_expr = {
+		"SIM_expr1": "{{ SIM_expr1 }}",
+		"SIM_expr2": "{{ SIM_expr2 }}",
+		"SIM_expr3": "{{ SIM_expr3 }}",
+		"SIM_expr4": "{{ SIM_expr4 }}",
+		"SIM_expr5": "{{ SIM_expr5 }}",
+		"SIM_expr6": "{{ SIM_expr6 }}",
+		"SIM_expr7": "{{ SIM_expr7 }}",
+		"SIM_expr8": "{{ SIM_expr8 }}",
+		"SIM_expr9": "{{ SIM_expr9 }}",
+	}
+
+	const MW_measure = {
+		"MW_measure1": "{{ MW_measure1 }}",
+		"MW_measure2": "{{ MW_measure2 }}",
+		"MW_measure3": "{{ MW_measure3 }}",
+		"MW_measure4": "{{ MW_measure4}}",
+		"MW_measure5": "{{ MW_measure5 }}",
+		"MW_measure6": "{{ MW_measure6 }}",
+		"MW_measure7": "{{ MW_measure7 }}",
+		"MW_measure8": "{{ MW_measure8 }}",
+		"MW_measure9": "{{ MW_measure9 }}",
+	}
+
+	const BINARY_FILES = {
+		"BINARY_FILES1": "{{ BINARY_FILES1 }}",
+		"BINARY_FILES2": "{{ BINARY_FILES2 }}",
+		"BINARY_FILES3": "{{ BINARY_FILES3 }}",
+		"BINARY_FILES4": "{{ BINARY_FILES4 }}",
+		"BINARY_FILES5": "{{ BINARY_FILES5 }}",
+		"BINARY_FILES6": "{{ BINARY_FILES6 }}",
+		"BINARY_FILES7": "{{ BINARY_FILES7 }}",
+		"BINARY_FILES8": "{{ BINARY_FILES8 }}",
+		"BINARY_FILES9": "{{ BINARY_FILES9 }}",
+	}
+
+	const MULTI_FILES = {
+		"MULTI_FILES1": "{{ MULTI_FILES1 }}",
+		"MULTI_FILES2": "{{ MULTI_FILES2 }}",
+		"MULTI_FILES3": "{{ MULTI_FILES3 }}",
+		"MULTI_FILES4": "{{ MULTI_FILES4 }}",
+		"MULTI_FILES5": "{{ MULTI_FILES5 }}",
+		"MULTI_FILES6": "{{ MULTI_FILES6 }}",
+		"MULTI_FILES7": "{{ MULTI_FILES7 }}",
+		"MULTI_FILES8": "{{ MULTI_FILES8 }}",
+		"MULTI_FILES9": "{{ MULTI_FILES9 }}",
+	}
+	listFiles(selectedPQC);
+
+	const nSamples = document.getElementById('nSamples');
+	nSamples.addEventListener('change', updateValueNS);
+	function updateValueNS(e) {
+	  $("#nSamplesText")[0].innerText = "Number of Training Data Points: " + e.target.value;
+	}
+
+
+	function goHAE() {
+		window.location.href='/evaluate/hae/';
+	}
+
+	function hoverPQC(pqc_el) {
+		pqc_el.style.fontWeight = "bold";
+		pqc_el.style.color = "rgba(248, 232, 250, 1)";
+		pqc_el.style.backgroundColor = "rgb(40, 61, 94)";
+	}
+
+	function unHoverPQC(pqc_el) {
+		pqc_el.style.fontWeight = "normal";
+		pqc_el.style.color = "rgb(40, 61, 94)";
+		pqc_el.style.backgroundColor = "rgba(248, 232, 250, 1)";
+	}
+
+	function handleMouseOver(e) {hoverPQC(e.target);}
+	function handleMouseOut (e) {unHoverPQC(e.target);}
+
+	function changeSelectedPQC(pqc) {
+		const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
+		const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+
+		old_pqc.addEventListener("mouseover", handleMouseOver);
+		old_pqc.addEventListener("mouseout", handleMouseOut);
+
+		pqc_el.removeEventListener("mouseover", handleMouseOver);
+		pqc_el.removeEventListener("mouseout", handleMouseOut);
+
+		hoverPQC(pqc_el);
+		unHoverPQC(old_pqc);
+
+		selectedPQC = pqc;
+		listFiles(selectedPQC);
+
+		const imgElem = document.getElementById("qc_image");
+		imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
+
+		$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png"
+		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
+		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
+	}
+
+	function listFiles (pqc) {
+		let binary_files = BINARY_FILES["BINARY_FILES" + pqc];
+		binary_files = binary_files.split("&quot;");
+
+		if (binary_files.length >1) {
+			binary_files.shift();
+			binary_files.pop();
+
+			let innerHTML = "";
+			for (let i=0; i<binary_files.length; i+=2) {
+				innerHTML += "<div class='file_list' onclick=\"selectBinaryFile('"+ binary_files[i] +"')\">" + binary_files[i] +"</div>";
+			}
+			$("#binary_files_wrap")[0].innerHTML = innerHTML;
+		} else {
+			$("#binary_files_wrap")[0].innerHTML = "No trained models yet.";
+		}
+
+
+		let multi_files = MULTI_FILES["MULTI_FILES" + pqc];
+		multi_files = multi_files.split("&quot;");
+
+		if (multi_files.length >1) {
+			multi_files.shift();
+			multi_files.pop();
+
+			let innerHTML = "";
+			for (let i=0; i<multi_files.length; i+=2) {
+				innerHTML += "<div class='file_list' onclick=\"selectMultiFile('"+ multi_files[i] +"')\">" + multi_files[i] +"</div>";
+			}
+			$("#multi_files_wrap")[0].innerHTML = innerHTML;
+		} else {
+			$("#multi_files_wrap")[0].innerHTML = "No trained models yet.";
+		}
+	}
+
+	function selectBinaryFile(filename) {
+		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC").done((response)=>{
+			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+
+			
+			/*$("#precision-qvc")[0];
+			$("#recall-qvc")[0];
+			$("#f1-qvc")[0];
+			$("#precision-cl")[0];
+			$("#recall-cl")[0];
+			$("#f1-cl")[0];*/
+			
+		})
+
+
+	}
+
+	function selectMultiFile(filename) {
+
+	}
+
+</script>
+
+
+{% endblock %}

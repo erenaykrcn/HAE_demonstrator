@@ -80,15 +80,16 @@
 					"
 				>PQC Descriptors</p>
 
-				<div style="text-align: left; font-family: Quicksand;">
-					<div style="display: inline-block; width: 49.5%; padding: 20px; padding-top: 0">
+				<div style=" font-family: Quicksand; text-align: center;">
+					<div style="display: inline-block; width: 49.5%; padding: 20px; padding-top: 0; text-align: left;">
 						<p style="font-size: 20px">1) Sim Expressivity:</p>
-						<p>We use the definition defined in <a href="https://arxiv.org/abs/1905.10876" target="_blank" style="color: rgb(42, 93, 130); font-weight: bold" >this paper</a> as: <br> <img src="/static/train_hae/KL_div.png" style="width: 80%"><br> Whereas KL is the Kullback-Leibler divergence and F is the randomly sampled fidelities. We use 1000 samples to construct the histogram to get the probability density with respect to the fidelities. We sample from the uniform distribution to construct the Haar random states. <br>The resulting histogram for the given PQC: <img src="/static/train_hae/hist/hist_pqc1.png" id="KL_im" style="width: 100%"><br><p id="KL_div" style="font-size: 18px; font-weight:bold">Resulting KL Divergence: </p> </p>
+						<p>We use the definition defined in <a href="https://arxiv.org/abs/1905.10876" target="_blank" style="color: rgb(42, 93, 130); font-weight: bold" >this paper</a> as: <br> <img src="/static/train_hae/KL_div.png" style="width: 80%"><br> Whereas KL is the Kullback-Leibler divergence and F is the randomly sampled fidelities. We use 1000 samples to construct the histogram to get the probability density with respect to the fidelities. We sample from the uniform distribution to construct the Haar random states. <br>The resulting histogram for the given PQC: <br><p id="KL_div" style="font-size: 18px; font-weight:bold">Resulting KL Divergence: </p> </p>
 					</div>
-					<div style="display: inline-block; width: 49.5%; vertical-align: top">
+					<div style="display: inline-block; width: 49.5%; vertical-align: top; text-align: left;">
 						<p style="font-size: 20px">2) Entangling Capacity:</p>
 						<p>We use the definition defined in <a href="https://arxiv.org/abs/1905.10876" target="_blank" style="color: rgb(42, 93, 130); font-weight: bold" >this paper</a> for entangling capacity, widely known as Meyer-Wallach Measure as: <br> <img src="/static/train_hae/MW.png" style=" width: 80%"><br> Whereas ρ_k is the density matrix of the Quantum Circuit with the kth qubit traced out. We sample 1000 parameters and average the entangling capacity over the samples. <br> <p id="MW" style="font-size: 18px; font-weight:bold">Resulting Entangling Capacity: </p></p>
 					</div>
+					<img src="/static/train_hae/hist/hist_pqc1.png" id="KL_im" style="width: 80%">
 				</div>
 
 			</div>
