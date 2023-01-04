@@ -53,7 +53,7 @@ def evaluate_hae(request):
     files = {}
     for i in range(len(N_PARAMS.keys())):
         try:
-            files["FILES" + str(i+1)] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results/pqc" + str(i+1) + "/binary_cl/")))
+            files["FILES" + str(i+1)] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results/pqc" + str(i+1))))
         except FileNotFoundError:
             files["FILES" + str(i+1)] = []
     dic = dic | files

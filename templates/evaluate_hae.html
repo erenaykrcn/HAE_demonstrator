@@ -62,8 +62,42 @@
 				</div>
 			</div>
 
-			<div style="display: inline-block; width: 49.7%">
-				
+			<div style="display: inline-block; width: 49.5%; vertical-align: top; font-family: 'Quicksand'; text-align: center;">
+
+
+				<div class="slider-container" style="width: 100%">
+				  <input type="range" min="10" max="1000" value="200" class="slider" id="nSamples">
+					<p class="slider-label" id="nSamplesText">Number of Test Data Points: 200</p>
+				</div>
+
+				<div style="display: inline-block; width: 49.5%">
+					<p style="font-family: 'Quicksand'; font-size: 20px">Models Trained</p>
+					<div id="files_wrap"></div>
+				</div>
+
+				<div style="display: none;" id="result-block">
+					<br><br><br><br><br>
+					<p style="text-align: center; font-weight: bold; font-size: 20px">Results of the Evaluation:</p>
+					<div style="font-family: 'Quicksand'; width: 49.5%; display: inline-block; text-align:right; border-right: solid; padding-right: 15px; font-size: 18px">
+						HAE Results: <br><br>
+						-> Precision: <p style="display: inline;" id="precision-qvc">1</p> <br> 
+						-> Recall: <p style="display: inline;" id="recall-qvc">1</p> <br>
+						-> F1 Score: <p style="display: inline;" id="f1-qvc">1</p> <br>
+					</div>
+
+					<div style="font-family: 'Quicksand'; width: 49.5%; display: inline-block; text-align: left; padding-left: 10px; font-size: 18px">
+						Classical Results: <br><br>
+						-> Precision: <p style="display: inline;" id="precision-cl" >1</p> <br> 
+						-> Recall: <p style="display: inline;" id="recall-cl" >1</p> <br>
+						-> F1 Score: <p style="display: inline;" id="f1-cl">1</p> <br>
+					</div>
+					<br><br><br>
+				</div>
+				<div style="display:none;" id="eval_data_cont" >
+					<br><br><br>
+					<p style="text-align: center; font-weight: bold; font-size: 20px" id="eval_started">Evaluation Started...</p>
+					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 80%">
+				</div>
 
 			</div>
 		</div>
@@ -134,6 +168,7 @@
 		unHoverPQC(old_pqc);
 
 		selectedPQC = pqc;
+		listFiles(selectedPQC);
 
 		const imgElem = document.getElementById("qc_image");
 		imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
@@ -142,6 +177,84 @@
 		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
 		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
 
+	}
+
+	const FILES = {
+		"FILES1": "{{ FILES1 }}",
+		"FILES2": "{{ FILES2 }}",
+		"FILES3": "{{ FILES3 }}",
+		"FILES4": "{{ FILES4 }}",
+		"FILES5": "{{ FILES5 }}",
+		"FILES6": "{{ FILES6 }}",
+		"FILES7": "{{ FILES7 }}",
+		"FILES8": "{{ FILES8 }}",
+		"FILES9": "{{ FILES9 }}",
+	}
+	listFiles(selectedPQC);
+
+	function listFiles (pqc) {
+		let files = FILES["FILES" + pqc];
+		files = files.split("&quot;");
+
+		if (files.length >1) {
+			files.shift();
+			files.pop();
+
+			let innerHTML = "";
+			for (let i=0; i<files.length; i+=2) {
+				innerHTML += "<div id='binary-"+  files[i]  +"' class='file_list' onclick=\"selectFile('"+ files[i] +"', this)\">" + files[i] +"</div>";
+			}
+			$("#files_wrap")[0].innerHTML = innerHTML;
+		} else {
+			$("#files_wrap")[0].innerHTML = "No trained models yet.";
+		}
+	}
+
+	let success = false;
+	let result_path = "";
+	function checkStatus(jobId) {
+				$.ajax({
+					url: "/evaluate/metric-check?job_id=" + jobId ,
+				}).done((response) => {
+					success = response["status"] == "completed";
+					if (success) {
+						const f1 = response["f1"]
+						const precision = response["precision"]
+						const recall = response["recall"]
+						const f1_cl = response["f1_cl"]
+						const precision_cl = response["precision_cl"]
+						const recall_cl = response["recall_cl"]
+
+						$("#precision-qvc")[0].innerText = precision;
+						$("#recall-qvc")[0].innerText = recall;
+						$("#f1-qvc")[0].innerText = f1;
+						$("#precision-cl")[0].innerText = precision_cl;
+						$("#recall-cl")[0].innerText = recall_cl;
+						$("#f1-cl")[0].innerText = f1_cl;
+
+						$("#eval_started")[0].style.display = "none";
+						$("#result-block")[0].style.display = "block";
+
+					}
+				});
+	}
+
+
+
+	function selectFile(filename, el) {
+		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=HAE&filename="+ filename +"&pqc=" + selectedPQC).done((response)=>{
+			$("#eval_data_cont")[0].style.display = "block";
+			$("#eval_data_im")[0].src = "/static/eval/scatter/HAE_" + nSamples.value + ".png";
+			el.style.backgroundColor = "rgb(40, 61, 94)";
+			el.style.color = "rgba(248, 232, 250, 1)";
+
+			const checkInterval = setInterval(() => {
+		  		checkStatus(response["id"]);
+		  		if (success) {
+		  			clearInterval(checkInterval);
+		  		};
+		  	} ,1500);
+		})
 	}
 
 </script>
