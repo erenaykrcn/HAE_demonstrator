@@ -13,7 +13,7 @@
 
 	<div class="inner-window" >
 		<div class="pqc-cont">
-			<p class="pqc-cont-text">Parametrized Quantum Circuits</p>
+			<p class="pqc-cont-text" style="border-top: none">Parametrized Quantum Circuits</p>
 			<div class="pqc-row" style="border-bottom: solid; padding-bottom: 20px">
 				<div class="pqc-row-elem" 
 					style="
@@ -98,8 +98,12 @@
 				</div>
 				<div style="display:none;" id="eval_data_cont" >
 					<br><br><br>
-					<p style="text-align: center; font-weight: bold; font-size: 20px" id="eval_started">Evaluation Started...</p>
-					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 80%">
+					<p style="text-align: center; font-weight: bold; font-size: 20px" id="eval_started">
+						Evaluation Started...
+						<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+					</p>
+
+					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 95%">
 				</div>
 
 			</div>
@@ -110,6 +114,7 @@
 
 <script>
 	let selectedPQC = 1;
+	let evalStarted = false;
 	$("#KL_div")[0].innerText = "KL Divergence: {{ SIM_expr1 }}";
 	$("#MW")[0].innerText = "Entangling Capacity: {{ MW_measure1 }}";
 
@@ -271,6 +276,7 @@
 
 						$("#eval_started")[0].style.display = "none";
 						$("#result-block")[0].style.display = "block";
+						$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
 
 					}
 				});
@@ -279,35 +285,41 @@
 
 
 	function selectBinaryFile(filename, el) {
-		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&pqc=" + selectedPQC).done((response)=>{
-			$("#eval_data_cont")[0].style.display = "block";
-			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
-			el.style.backgroundColor = "rgb(40, 61, 94)";
-			el.style.color = "rgba(248, 232, 250, 1)";
+		if (!evalStarted) {
+			$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&pqc=" + selectedPQC).done((response)=>{
+				$("#eval_data_cont")[0].style.display = "block";
+				$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+				el.style.backgroundColor = "rgb(40, 61, 94)";
+				el.style.color = "rgba(248, 232, 250, 1)";
 
-			const checkInterval = setInterval(() => {
-		  		checkStatus(response["id"]);
-		  		if (success) {
-		  			clearInterval(checkInterval);
-		  		};
-		  	} ,1500);
-		})
+				const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
+			  		if (success) {
+			  			clearInterval(checkInterval);
+			  		};
+			  	} ,1500);
+			  	evalStarted = true;
+			});
+		}
 	}
 
 	function selectMultiFile(filename, el) {
-		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False").done((response)=>{
-			$("#eval_data_cont")[0].style.display = "block";
-			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
-			el.style.backgroundColor = "rgb(40, 61, 94)";
-			el.style.color = "rgba(248, 232, 250, 1)";
+		if (!evalStarted) {
+			$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False").done((response)=>{
+				$("#eval_data_cont")[0].style.display = "block";
+				$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+				el.style.backgroundColor = "rgb(40, 61, 94)";
+				el.style.color = "rgba(248, 232, 250, 1)";
 
-			const checkInterval = setInterval(() => {
-		  		checkStatus(response["id"]);
-		  		if (success) {
-		  			clearInterval(checkInterval);
-		  		};
-		  	} ,1500);
-		})
+				const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
+			  		if (success) {
+			  			clearInterval(checkInterval);
+			  		};
+			  	} ,1500);
+			  	evalStarted = true;
+			});
+		}
 	}
 
 </script>

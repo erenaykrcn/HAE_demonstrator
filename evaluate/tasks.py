@@ -9,10 +9,11 @@ import sys
 sys.path.append(os.path.join(dirname, '../../HAE/modules/'))
 from metrics.metrics import get_scores
 from metrics.predict import predict_HAE, predict_classical, predict_QVC
+from preprocessing.visualize import plot_PCA_2D
 
 
 @shared_task()
-def test_model_task(job, test_data, test_labels):
+def test_model_task(job, test_data, test_labels, path_save=""):
 	model = job["model"]
 	pqc = int(job["pqc"])
 	n_samples = int(job["n_samples"])
@@ -23,8 +24,7 @@ def test_model_task(job, test_data, test_labels):
 		predict, labels = predict_HAE(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels)
 	elif model == "QVC":
 		predict, labels = predict_QVC(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels)
-		print(predict)
-	
+
 	f1, precision, recall = get_scores(predict, labels)
 	f1_cl, precision_cl, recall_cl = get_scores(predict_cl, labels_cl)
 
@@ -38,5 +38,15 @@ def test_model_task(job, test_data, test_labels):
 
 	test_job.status = "completed"
 	test_job.save()
+
+	if path_save:
+		labels = np.array(labels)
+		predict = np.array(predict)
+		correctly_discovered_anomalies = np.where((labels == predict) & (labels==-1))
+		wrongly_discovered_anomalies = np.where((labels != predict) & (labels==1))
+
+		labels[correctly_discovered_anomalies] = 2
+		labels[wrongly_discovered_anomalies] = -2
+		plot_PCA_2D(test_data=test_data, test_labels=labels, path_save=path_save)
 
     

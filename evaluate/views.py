@@ -21,6 +21,12 @@ def evaluate_metric(request):
     test_data, test_labels = sample_test_data(n_samples, True)
     model = request.GET["model"]
     qvc_inner_path = "/binary_cl" if is_binary else "/multi_cl"
+    path_save = os.path.join(dirname, f"../static/eval/scatter/{model}_{n_samples}.png")
+    path_save_after_training = os.path.join(dirname, f"../static/eval/scatter/{model}_{n_samples}_after_training.png")
+    
+    test_data_copy = test_data.copy()
+    test_labels_copy = test_labels.copy()
+    plot_PCA_2D(test_data=test_data_copy, test_labels=test_labels_copy, path_save=path_save)
 
     job = TestJob.objects.create(
         model=model,
@@ -29,12 +35,7 @@ def evaluate_metric(request):
         pqc=pqc,
         result_path=os.path.join(dirname, f"../../HAE/data/training_results{'_QVC' if model=='QVC' else ''}/pqc{pqc}{qvc_inner_path if model=='QVC' else ''}/{filename}"),
         )
-    test_model_task.delay(model_to_dict(job), test_data=test_data, test_labels=test_labels)
-
-    test_data_copy = test_data.copy()
-    test_labels_copy = test_labels.copy()
-    fig = plot_PCA_2D(test_data=test_data_copy, test_labels=test_labels_copy, path_save=os.path.join(dirname, f"../static/eval/scatter/{model}_{n_samples}.png"))
-
+    test_model_task.delay(model_to_dict(job), test_data=test_data, test_labels=test_labels, path_save=path_save_after_training)
 
     return JsonResponse(model_to_dict(job))
 
