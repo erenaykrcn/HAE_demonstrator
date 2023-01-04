@@ -78,7 +78,7 @@
 					<div id="multi_files_wrap"></div>
 				</div>
 
-				<div style="" id="result-block">
+				<div style="display: none;" id="result-block">
 					<br><br><br><br><br>
 					<p style="text-align: center; font-weight: bold; font-size: 20px">Results of the Evaluation:</p>
 					<div style="font-family: 'Quicksand'; width: 49.5%; display: inline-block; text-align:right; border-right: solid; padding-right: 15px; font-size: 18px">
@@ -95,6 +95,10 @@
 						-> F1 Score: <p style="display: inline;" id="f1-cl">1</p> <br>
 					</div>
 					<br><br><br>
+				</div>
+				<div style="display:none;" id="eval_data_cont" >
+					<br><br><br>
+					<p style="text-align: center; font-weight: bold; font-size: 20px" id="eval_started">Evaluation Started...</p>
 					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 80%">
 				</div>
 
@@ -218,7 +222,7 @@
 
 			let innerHTML = "";
 			for (let i=0; i<binary_files.length; i+=2) {
-				innerHTML += "<div class='file_list' onclick=\"selectBinaryFile('"+ binary_files[i] +"')\">" + binary_files[i] +"</div>";
+				innerHTML += "<div id='binary-"+  binary_files[i]  +"' class='file_list' onclick=\"selectBinaryFile('"+ binary_files[i] +"', this)\">" + binary_files[i] +"</div>";
 			}
 			$("#binary_files_wrap")[0].innerHTML = innerHTML;
 		} else {
@@ -235,7 +239,7 @@
 
 			let innerHTML = "";
 			for (let i=0; i<multi_files.length; i+=2) {
-				innerHTML += "<div class='file_list' onclick=\"selectMultiFile('"+ multi_files[i] +"')\">" + multi_files[i] +"</div>";
+				innerHTML += "<div id='multi-"+  multi_files[i]  +"' class='file_list' onclick=\"selectMultiFile('"+ multi_files[i] +"', this)\">" + multi_files[i] +"</div>";
 			}
 			$("#multi_files_wrap")[0].innerHTML = innerHTML;
 		} else {
@@ -243,25 +247,67 @@
 		}
 	}
 
-	function selectBinaryFile(filename) {
-		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC").done((response)=>{
-			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+	let success = false;
+	let result_path = "";
+	function checkStatus(jobId) {
+				$.ajax({
+					url: "/evaluate/metric-check?job_id=" + jobId ,
+				}).done((response) => {
+					success = response["status"] == "completed";
+					if (success) {
+						const f1 = response["f1"]
+						const precision = response["precision"]
+						const recall = response["recall"]
+						const f1_cl = response["f1_cl"]
+						const precision_cl = response["precision_cl"]
+						const recall_cl = response["recall_cl"]
 
-			
-			/*$("#precision-qvc")[0];
-			$("#recall-qvc")[0];
-			$("#f1-qvc")[0];
-			$("#precision-cl")[0];
-			$("#recall-cl")[0];
-			$("#f1-cl")[0];*/
-			
-		})
+						$("#precision-qvc")[0].innerText = precision;
+						$("#recall-qvc")[0].innerText = recall;
+						$("#f1-qvc")[0].innerText = f1;
+						$("#precision-cl")[0].innerText = precision_cl;
+						$("#recall-cl")[0].innerText = recall_cl;
+						$("#f1-cl")[0].innerText = f1_cl;
 
+						$("#eval_started")[0].style.display = "none";
+						$("#result-block")[0].style.display = "block";
 
+					}
+				});
 	}
 
-	function selectMultiFile(filename) {
 
+
+	function selectBinaryFile(filename, el) {
+		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&pqc=" + selectedPQC).done((response)=>{
+			$("#eval_data_cont")[0].style.display = "block";
+			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+			el.style.backgroundColor = "rgb(40, 61, 94)";
+			el.style.color = "rgba(248, 232, 250, 1)";
+
+			const checkInterval = setInterval(() => {
+		  		checkStatus(response["id"]);
+		  		if (success) {
+		  			clearInterval(checkInterval);
+		  		};
+		  	} ,1500);
+		})
+	}
+
+	function selectMultiFile(filename, el) {
+		$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False").done((response)=>{
+			$("#eval_data_cont")[0].style.display = "block";
+			$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+			el.style.backgroundColor = "rgb(40, 61, 94)";
+			el.style.color = "rgba(248, 232, 250, 1)";
+
+			const checkInterval = setInterval(() => {
+		  		checkStatus(response["id"]);
+		  		if (success) {
+		  			clearInterval(checkInterval);
+		  		};
+		  	} ,1500);
+		})
 	}
 
 </script>

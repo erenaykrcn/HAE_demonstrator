@@ -2,7 +2,7 @@ import os
 dirname = os.path.dirname(__file__)
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .constants import MW_measure, SIM_expr, N_PARAMS
 import json
 
@@ -84,26 +84,6 @@ def evaluate_qvc(request):
     dic = dic | multi_files
 
     return render(request, "evaluate_qvc.html", dic)
-
-
-def evaluate_metric(request):
-    n_samples = int(request.GET["n_samples"])
-    test_data, test_labels = sample_test_data(n_samples, True)
-    model = request.GET["model"]
-
-    # TODO: call this from celery with predictions
-    fig = plot_PCA_2D(test_data=test_data, test_labels=test_labels, path_save=os.path.join(dirname, f"../static/eval/scatter/{model}_{n_samples}.png"))
-
-
-    if model == "HAE":
-        return HttpResponse("A")
-    elif model == "QVC":
-        return HttpResponse("A")
-    else:
-        raise KeyError("Given Model can be either HAE or QVC")
-
-
-    return HttpResponse("A")
 
 
 def visualize(request):

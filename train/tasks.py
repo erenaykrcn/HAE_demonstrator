@@ -28,7 +28,7 @@ def train_model_task(job):
 		result_path = model.trainReconstruction(job)
 	elif model == "QVC":
 		max_iter = job["max_iter"]
-		is_binary = bool(job["is_binary"])
+		is_binary = job["is_binary"]
 		initial_point = job["initial_point"] if job["initial_point"] else np.random.random(N_PARAMS[pqc])
 
 		model = QVCAutoencoder(qc_index=pqc, max_iter=max_iter, n_samples=n_samples, job=job)

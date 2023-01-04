@@ -269,6 +269,7 @@
 					}
 
 					success = response["status"] == "completed";
+					console.log(success);
 					if (success) {
 						result_path = response["result_path"];
 			  			$(".trainingStarted")[0].innerText = "Training Done!";
