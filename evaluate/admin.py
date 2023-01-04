@@ -1,3 +1,9 @@
 from django.contrib import admin
+from .models import TestJob
 
-# Register your models here.
+
+class TestJobAdmin(admin.ModelAdmin):
+    list_display = ("model", "pqc", "status", "n_samples")
+
+
+admin.site.register(TestJob, TestJobAdmin)
