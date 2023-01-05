@@ -100,7 +100,7 @@
 					<br><br><br>
 					<p style="text-align: center; font-weight: bold; font-size: 20px" id="eval_started">
 						Evaluation Started...
-						<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+						<div class="lds-roller" id="loading"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 					</p>
 
 					<img src="/static/eval/scatter/blank.png" id="eval_data_im" style="width: 95%">
@@ -275,8 +275,17 @@
 						$("#f1-cl")[0].innerText = f1_cl;
 
 						$("#eval_started")[0].style.display = "none";
+						$("#loading")[0].style.display = "none";
 						$("#result-block")[0].style.display = "block";
-						$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
+						try {
+							$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
+						} catch (e) {
+							const checkInterval = setInterval(() => {
+								$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
+						  		clearInterval(checkInterval);
+						  	} ,3000);
+
+						}
 
 					}
 				});
