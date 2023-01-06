@@ -31,6 +31,7 @@ urlpatterns = [
     path("visualize/", visualize),
     path("train/", include('train.urls')),
     path("evaluate/", include('evaluate.urls')),
+    path("custom_pqc/", include('custom_pqc.urls')),
 ] 
 
 urlpatterns += staticfiles_urlpatterns()

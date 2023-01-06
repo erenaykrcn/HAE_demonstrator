@@ -64,7 +64,121 @@
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(9)">PQC9</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(10)">CUSTOM</div>
 			</div>
+
+			<div id="custom-tab" style="display: none">
+					<div style="text-align: center; display: inline-block; width: 50%; vertical-align: top; border-bottom: none;
+								padding-top: 60px; padding-left: 50px; padding-bottom: 50px">
+						<p
+							style="
+								width: 100%;
+								font-size: 1.5vw;
+		    					font-family: Quicksand;
+							"
+						>Encoder Layer</p>
+
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(11)" style="width: auto">ZFeatureMap</div>
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(12)" style="width: auto">ZZFeatureMap</div>
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(13)" style="width: auto">PauliFeatureMap</div>
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(14)" style="width: auto">NLocal</div>
+						<br>
+						<div style="font-family: 'Quicksand'; " id="encoder-params">
+							<br><br><br>
+							<p style="font-size: 20px; font-family: 'Quicksand'">Parameters</p><br>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-reps-wr">
+							    <label for="encoder-reps" style="display: block;">Repetitions</label>
+							    <input id="encoder-reps" type="text" value="2" name="encoder-reps" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-entanglement-wr">
+							    <label for="encoder-entanglement" style="display: block;">Entanglement</label>
+							    <input id="encoder-entanglement" type="text" value="full" name="encoder-entanglement" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-paulis-wr">
+							    <label for="encoder-paulis" style="display: block;">Paulis</label>
+							    <input id="encoder-paulis" type="text" value="['Z', 'ZZ']" name="encoder-paulis">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-alpha-wr">
+							    <label for="encoder-alpha" style="display: block;">Alpha</label>
+							    <input id="encoder-alpha" type="text" value="2" name="encoder-alpha" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-rotation-blocks-wr">
+							    <label for="encoder-rotation-blocks" style="display: block;">Rotation Blocks</label>
+							    <input id="encoder-rotation-blocks" type="text" value="['ry', 'rz']" name="encoder-rotation-blocks" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="encoder-entanglement-blocks-wr">
+							    <label for="encoder-entanglement-blocks" style="display: block;">Entanglement Blocks</label>
+							    <input id="encoder-entanglement-blocks" type="text" value="cx" name="encoder-entanglement-blocks" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none;" id="encoder-skip-final-rotation-layer-wr">
+							    <label for="encoder-skip-final-rotation-layer" style="display: block;">Skip Final Rotation Layer</label>
+							    <select name="encoder-skip-final-rotation-layer" id="encoder-skip-final-rotation-layer" style="width: 150px">
+								  <option value="False">False</option>
+								  <option value="True">True</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div style="text-align: center; display: inline-block; width: 49.5%; vertical-align: top;
+								padding-top: 60px; border-bottom: solid;
+		    					border-left: solid; padding-left: 50px;  padding-bottom: 50px; border-bottom: none">
+						<p
+							style="
+								width: 100%;
+								font-size: 1.5vw;
+		    					font-family: Quicksand;
+							"
+						>Ansatz Layer</p>
+
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(15)" style="width: auto">RealAmplitudes</div>
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(16)" style="width: auto">EfficientSU2</div>
+						<div class="pqc-row-elem" onclick="changeSelectedPQC(17)" style="width: auto">TwoLocal</div>
+						<br>
+						<div style="font-family: 'Quicksand'; display:none" id="ansatz-params">
+							<br><br><br>
+							<p style="font-size: 20px; font-family: 'Quicksand'">Parameters</p><br>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-reps-wr">
+							    <label for="ansatz-reps" style="display: block;">Repetitions</label>
+							    <input id="ansatz-reps" type="text" value="2" name="ansatz-reps" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-entanglement-wr">
+							    <label for="ansatz-entanglement" style="display: block;">Entanglement</label>
+							    <input id="ansatz-entanglement" type="text" value="full" name="ansatz-entanglement" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-rotation-blocks-wr">
+							    <label for="ansatz-rotation-blocks" style="display: block;">Rotation Blocks</label>
+							    <input id="ansatz-rotation-blocks" type="text" value="['ry', 'rz']" name="ansatz-rotation-blocks" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-su2-gates-wr">
+							    <label for="ansatz-su2-gates" style="display: block;">SU2 Gates</label>
+							    <input id="ansatz-su2-gates" type="text" value="['ry', 'y']" name="ansatz-su2-gates" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-entanglement-blocks-wr">
+							    <label for="ansatz-entanglement-blocks" style="display: block;">Entanglement Blocks</label>
+							    <input id="ansatz-entanglement-blocks" type="text" value="cx" name="ansatz-entanglement-blocks" style="display: block;">
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-skip-final-rotation-layer-wr">
+							    <label for="ansatz-skip-final-rotation-layer" style="display: block;">Skip Final Rotation Layer</label>
+							    <select name="ansatz-skip-final-rotation-layer" id="ansatz-skip-final-rotation-layer" style="width: 150px">
+								  <option value="False">False</option>
+								  <option value="True">True</option>
+								</select>
+							</div>
+							<div style="float:left;margin-right:20px;display: none" id="ansatz-skip-unentangled-qubits-wr">
+							    <label for="ansatz-skip-unentangled-qubits" style="display: block;">Skip Unentangled Qubits</label>
+							    <select name="ansatz-skip-unentangled-qubits" id="ansatz-skip-unentangled-qubits" style="width: 150px">
+								  <option value="False">False</option>
+								  <option value="True">True</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div style="text-align: center; border-bottom: solid;">
+						<div class="startTraining" onclick="selectCustomPqc()" 
+						>Select PQC</div>
+					</div>
+				</div>
+    		</div>
 
 			<div style="text-align: left; display: inline-block; width: 50%">
 				<img style="width: 100%" src="/static/train_hae/pqc1.png" id="qc_image">
@@ -122,6 +236,8 @@
 
 <script>
 	let selectedPQC = 1;
+	let selectedAnsatz = 0;
+	let selectedEncoder = 0;
 	let selectedIP = "random";
 	let selectedCL = "binary";
 	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
@@ -220,34 +336,153 @@
 	function handleMouseOver(e) {hoverPQC(e.target);}
 	function handleMouseOut (e) {unHoverPQC(e.target);}
 
+
+
+	changeSelectedPQC(11);
+	changeSelectedPQC(15);
 	function changeSelectedPQC(pqc) {
-		const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
-		const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+		if (pqc <11 && pqc!=selectedPQC) {
+			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
+			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
-		old_pqc.addEventListener("mouseover", handleMouseOver);
-		old_pqc.addEventListener("mouseout", handleMouseOut);
+			old_pqc.addEventListener("mouseover", handleMouseOver);
+			old_pqc.addEventListener("mouseout", handleMouseOut);
 
-		pqc_el.removeEventListener("mouseover", handleMouseOver);
-		pqc_el.removeEventListener("mouseout", handleMouseOut);
+			pqc_el.removeEventListener("mouseover", handleMouseOver);
+			pqc_el.removeEventListener("mouseout", handleMouseOut);
 
-		hoverPQC(pqc_el);
-		unHoverPQC(old_pqc);
+			hoverPQC(pqc_el);
+			unHoverPQC(old_pqc);
 
-		selectedPQC = pqc;
+			selectedPQC = pqc;
 
-		const imgElem = document.getElementById("qc_image");
-		imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
+			if (pqc<10) {
+				const imgElem = document.getElementById("qc_image");
+				imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
 
-		$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png"
-		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
-		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
+				$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png";
+				$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
+				$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
 
-		let newInputValue = [];
-		for (let i=0; i<N_PARAMS["N_PARAMS" + selectedPQC]; i++) {
-			newInputValue.push(0)
+				$("#qc_image")[0].style.display = "block";
+				$("#KL_im")[0].style.display = "block";
+				$("#custom-tab")[0].style.display = "none";
+			} else if (pqc == 10) {
+				$("#qc_image")[0].style.display = "none";
+				$("#KL_im")[0].style.display = "none";
+				$("#KL_div")[0].innerText = "Resulting KL Divergence: ";
+				$("#MW")[0].innerText = "Resulting Entangling Capacity: ";
+
+				$("#custom-tab")[0].style.display = "block";
+			} 
+		} else if (pqc<15 && pqc!=selectedEncoder+10) {
+			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedEncoder+9]
+			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+
+			old_pqc.addEventListener("mouseover", handleMouseOver);
+			old_pqc.addEventListener("mouseout", handleMouseOut);
+
+			pqc_el.removeEventListener("mouseover", handleMouseOver);
+			pqc_el.removeEventListener("mouseout", handleMouseOut);
+
+			hoverPQC(pqc_el);
+			unHoverPQC(old_pqc);
+
+			selectedEncoder = pqc - 10;
+
+			switch (pqc-10) {
+				case 1:
+					$("#encoder-params")[0].style.display = "inline-block";
+					$("#encoder-reps-wr")[0].style.display = "inline-block";
+					$("#encoder-alpha-wr")[0].style.display = "none";
+					$("#encoder-paulis-wr")[0].style.display = "none";
+					$("#encoder-entanglement-wr")[0].style.display = "none";
+					$("#encoder-entanglement-blocks-wr")[0].style.display = "none";
+					$("#encoder-rotation-blocks-wr")[0].style.display = "none";
+					$("#encoder-skip-final-rotation-layer-wr")[0].style.display = "none";
+					break;
+				case 2:
+					$("#encoder-params")[0].style.display = "inline-block";
+					$("#encoder-reps-wr")[0].style.display = "inline-block";
+					$("#encoder-alpha-wr")[0].style.display = "none";
+					$("#encoder-paulis-wr")[0].style.display = "none";
+					$("#encoder-entanglement-wr")[0].style.display = "none";
+					$("#encoder-entanglement-blocks-wr")[0].style.display = "none";
+					$("#encoder-rotation-blocks-wr")[0].style.display = "none";
+					$("#encoder-skip-final-rotation-layer-wr")[0].style.display = "none";
+					break;
+				case 3:
+					$("#encoder-params")[0].style.display = "inline-block";
+					$("#encoder-reps-wr")[0].style.display = "inline-block";
+					$("#encoder-alpha-wr")[0].style.display = "block";
+					$("#encoder-paulis-wr")[0].style.display = "block";
+					$("#encoder-entanglement-wr")[0].style.display = "block";
+					$("#encoder-entanglement-blocks-wr")[0].style.display = "none";
+					$("#encoder-rotation-blocks-wr")[0].style.display = "none";
+					$("#encoder-skip-final-rotation-layer-wr")[0].style.display = "none";
+					break;
+				case 4:
+					$("#encoder-params")[0].style.display = "inline-block";
+					$("#encoder-reps-wr")[0].style.display = "inline-block";
+					$("#encoder-alpha-wr")[0].style.display = "none";
+					$("#encoder-paulis-wr")[0].style.display = "none";
+					$("#encoder-entanglement-wr")[0].style.display = "block";
+					$("#encoder-entanglement-blocks-wr")[0].style.display = "block";
+					$("#encoder-rotation-blocks-wr")[0].style.display = "block";
+					$("#encoder-skip-final-rotation-layer-wr")[0].style.display = "block";
+					break;
+			}
+
+		} else if (pqc < 18 && pqc!=selectedAnsatz+14) {
+			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedAnsatz+13]
+			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+
+			old_pqc.addEventListener("mouseover", handleMouseOver);
+			old_pqc.addEventListener("mouseout", handleMouseOut);
+
+			pqc_el.removeEventListener("mouseover", handleMouseOver);
+			pqc_el.removeEventListener("mouseout", handleMouseOut);
+
+			hoverPQC(pqc_el);
+			unHoverPQC(old_pqc);
+
+			selectedAnsatz = pqc - 14;
+
+			switch (pqc-14) {
+				case 1:
+					$("#ansatz-params")[0].style.display = "inline-block";
+					$("#ansatz-reps-wr")[0].style.display = "inline-block";
+					$("#ansatz-entanglement-wr")[0].style.display = "block";
+					$("#ansatz-entanglement-blocks-wr")[0].style.display = "none";
+					$("#ansatz-rotation-blocks-wr")[0].style.display = "none";
+					$("#ansatz-skip-final-rotation-layer-wr")[0].style.display = "block";
+					$("#ansatz-skip-unentangled-qubits-wr")[0].style.display = "block";
+					$("#ansatz-su2-gates-wr")[0].style.display = "none";
+					break;
+
+				case 2:
+					$("#ansatz-params")[0].style.display = "inline-block";
+					$("#ansatz-reps-wr")[0].style.display = "inline-block";
+					$("#ansatz-entanglement-wr")[0].style.display = "block";
+					$("#ansatz-entanglement-blocks-wr")[0].style.display = "none";
+					$("#ansatz-rotation-blocks-wr")[0].style.display = "none";
+					$("#ansatz-skip-final-rotation-layer-wr")[0].style.display = "block";
+					$("#ansatz-skip-unentangled-qubits-wr")[0].style.display = "block";
+					$("#ansatz-su2-gates-wr")[0].style.display = "block";
+					break;
+				case 3:
+					$("#ansatz-params")[0].style.display = "inline-block";
+					$("#ansatz-reps-wr")[0].style.display = "inline-block";
+					$("#ansatz-entanglement-wr")[0].style.display = "block";
+					$("#ansatz-entanglement-blocks-wr")[0].style.display = "block";
+					$("#ansatz-rotation-blocks-wr")[0].style.display = "block";
+					$("#ansatz-skip-final-rotation-layer-wr")[0].style.display = "block";
+					$("#ansatz-skip-unentangled-qubits-wr")[0].style.display = "none";
+					$("#ansatz-su2-gates-wr")[0].style.display = "none";
+					break;
+			}
+			
 		}
-		$("#custom-value")[0].value = "[" + newInputValue.toString() + "]";
-
 	}
 
 

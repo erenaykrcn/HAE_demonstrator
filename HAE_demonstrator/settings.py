@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'train.apps.TrainConfig',
     'evaluate.apps.EvaluateConfig',
+    'custom_pqc.apps.CustomPqcConfig',
 ]
 
 MIDDLEWARE = [
