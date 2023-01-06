@@ -194,27 +194,29 @@
 	function handleMouseOut (e) {unHoverPQC(e.target);}
 
 	function changeSelectedPQC(pqc) {
-		const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
-		const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
+		if (pqc!=selectedPQC) {
+			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedPQC-1]
+			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
-		old_pqc.addEventListener("mouseover", handleMouseOver);
-		old_pqc.addEventListener("mouseout", handleMouseOut);
+			old_pqc.addEventListener("mouseover", handleMouseOver);
+			old_pqc.addEventListener("mouseout", handleMouseOut);
 
-		pqc_el.removeEventListener("mouseover", handleMouseOver);
-		pqc_el.removeEventListener("mouseout", handleMouseOut);
+			pqc_el.removeEventListener("mouseover", handleMouseOver);
+			pqc_el.removeEventListener("mouseout", handleMouseOut);
 
-		hoverPQC(pqc_el);
-		unHoverPQC(old_pqc);
+			hoverPQC(pqc_el);
+			unHoverPQC(old_pqc);
 
-		selectedPQC = pqc;
-		listFiles(selectedPQC);
+			selectedPQC = pqc;
+			listFiles(selectedPQC);
 
-		const imgElem = document.getElementById("qc_image");
-		imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
+			const imgElem = document.getElementById("qc_image");
+			imgElem.src = "/static/train_hae/pqc" + pqc + ".png";
 
-		$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png"
-		$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
-		$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
+			$("#KL_im")[0].src = "/static/train_hae/hist/hist_pqc" + selectedPQC + ".png"
+			$("#KL_div")[0].innerText = "Resulting KL Divergence: " + SIM_expr["SIM_expr" + selectedPQC];
+			$("#MW")[0].innerText = "Resulting Entangling Capacity: " + MW_measure["MW_measure" + selectedPQC];
+		}
 	}
 
 	function listFiles (pqc) {
@@ -283,7 +285,7 @@
 							const checkInterval = setInterval(() => {
 								$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
 						  		clearInterval(checkInterval);
-						  	} ,3000);
+						  	} ,5000);
 
 						}
 
