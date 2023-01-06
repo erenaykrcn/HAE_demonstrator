@@ -45,3 +45,5 @@ class CustomPQCJob(models.Model):
 	kl_div = models.FloatField(blank=True, null=True)
 	mw_meas = models.TextField(blank=True, null=True)
 
+	error_message = models.TextField(blank=True, null=True)
+

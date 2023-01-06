@@ -174,7 +174,7 @@
 						</div>
 					</div>
 					<div style="text-align: center; border-bottom: solid;">
-						<div class="startTraining" onclick="selectCustomPqc()" 
+						<div class="startTraining" onclick="selectCustomPqc()" id="select-pqc"
 						>Select PQC</div>
 					</div>
 				</div>
@@ -240,6 +240,10 @@
 	let selectedEncoder = 0;
 	let selectedIP = "random";
 	let selectedCL = "binary";
+	let successCustom = false;
+	let customJobId = 0;
+	let customPQCSelected = false;
+	let jobFailed = false;
 	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
 	$("#MW")[0].innerText = "Resulting Entangling Capacity: {{ MW_measure1 }}";
 
@@ -375,7 +379,7 @@
 
 				$("#custom-tab")[0].style.display = "block";
 			} 
-		} else if (pqc<15 && pqc!=selectedEncoder+10) {
+		} else if (pqc<15 && pqc!=selectedEncoder+10 && !successCustom && !customPQCSelected) {
 			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedEncoder+9]
 			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
@@ -433,7 +437,7 @@
 					break;
 			}
 
-		} else if (pqc < 18 && pqc!=selectedAnsatz+14) {
+		} else if (pqc < 18 && pqc!=selectedAnsatz+14 && !successCustom && !customPQCSelected) {
 			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedAnsatz+13]
 			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
@@ -485,88 +489,122 @@
 		}
 	}
 
-
-	let success = false;
-	let result_path = "";
-	function checkStatus(jobId) {
-				$.ajax({
-					url: "/train/check-training?job_id=" + jobId ,
-				}).done((response) => {
-					loss_string = response["loss_string"];
-					loss_list = loss_string.split(";");
-					console.log(loss_list);
-
-					$("#graph")[0].src = "/static/train_hae/loss_plot/" + response["id"] + "_" + response["epoch"] + ".png";
-					let innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Max Iter: " + response["max_iter"] + "<br>PQC: "+ selectedPQC + "<br>";
-
-					for (let i=0;i<loss_list.length-1;i++) {
-						innerHTML = innerHTML + "-> Evaluations[" + (i+1)*3 + "/"+ (parseInt(response["max_iter"])*3).toString() +"]: "+ loss_list[i] +" <br>"
-					}
-
-					success = response["status"] == "completed";
-					console.log(success);
-					if (success) {
-						result_path = response["result_path"];
-			  			$(".trainingStarted")[0].innerText = "Training Done!";
-			  			$(".trainingStarted")[0].style.color = "green";
-
-			  			let res_path = result_path;
-			  			res_path = res_path.split(".tx");
-			  			res_path = res_path[res_path.length - 2];
-			  			res_path = res_path.split("_");
-			  			min_loss = res_path[res_path.length - 1];
-			  			innerHTML = innerHTML + "<br><p class='training-complete'>Training Completed. Min Loss Found: " + min_loss + "<br> Result Name (Please note it down for Eval step): loss_" + min_loss + ".txt</p>";
-					}
-
-					$("#log-content")[0].innerHTML = innerHTML;
-				});
-	}
-
 	$('#startTraining').on("click", () => {
-		let initial_point = "random";
-		if (selectedIP=="custom") {
-			const given_custom = $("#custom-value")[0].value;
-			try {
-				initial_point = JSON.parse(given_custom);
-			} catch (error) {
-				alert(error);
-				return;
-			}
-			if (initial_point.length.toString() !== N_PARAMS["N_PARAMS" + selectedPQC]) {
-				alert("Please match the number of parameters in the given custom initial point. " + N_PARAMS["N_PARAMS" + selectedPQC] + " parameters are needed.");
-				return;
-			}
-
-			for (let i=0;i<initial_point.length; i++) {
-				if (parseFloat(initial_point[i]) > Math.PI || parseFloat(initial_point[i]) < -Math.PI ) {
-					alert("Invalid value for one or more of the given initial point parameters. Values have to be between -π and π!");
+		if (selectedPQC < 10 || successCustom) {
+			let initial_point = "random";
+			if (selectedIP=="custom") {
+				const given_custom = $("#custom-value")[0].value;
+				try {
+					initial_point = JSON.parse(given_custom);
+				} catch (error) {
+					alert(error);
 					return;
 				}
+				if (initial_point.length.toString() !== N_PARAMS["N_PARAMS" + selectedPQC]) {
+					alert("Please match the number of parameters in the given custom initial point. " + N_PARAMS["N_PARAMS" + selectedPQC] + " parameters are needed.");
+					return;
+				}
+
+				for (let i=0;i<initial_point.length; i++) {
+					if (parseFloat(initial_point[i]) > Math.PI || parseFloat(initial_point[i]) < -Math.PI ) {
+						alert("Invalid value for one or more of the given initial point parameters. Values have to be between -π and π!");
+						return;
+					}
+				}
+				initial_point = given_custom;
 			}
-			initial_point = given_custom;
+
+			// TODO: Custom PQC
+			$.ajax({
+				url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=QVC" ,
+
+			}).done((response) => {
+			  	console.log("Traning Started!");
+			  	$('#startTraining')[0].style.display = "none";
+			  	$('#trainingStarted')[0].style.display = "block";
+			  	$("#training-log-cont")[0].style.display = "block";
+			  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Max Iter: " + max_iter.value + "<br>PQC: "+ selectedPQC +"<br>Initializing...";
+
+			  	const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
+			  		if (success && result_path) {
+			  			clearInterval(checkInterval);
+			  		};
+			  	} ,1500);
+			});
 		}
-
-		$.ajax({
-			url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=QVC" ,
-
-		}).done((response) => {
-		  	console.log("Traning Started!");
-		  	$('#startTraining')[0].style.display = "none";
-		  	$('#trainingStarted')[0].style.display = "block";
-		  	$("#training-log-cont")[0].style.display = "block";
-		  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Max Iter: " + max_iter.value + "<br>PQC: "+ selectedPQC +"<br>Initializing...";
-
-		  	const checkInterval = setInterval(() => {
-		  		checkStatus(response["id"]);
-		  		if (success && result_path) {
-		  			clearInterval(checkInterval);
-		  		};
-		  	} ,1500);
-
-		  	
-
-		});
 	});
+
+
+	function selectCustomPqc() {
+		if (!customPQCSelected) {
+			successCustom = false;
+			const e_dict = {
+				1: "ZFeatureMap",
+				2: "ZZFeatureMap",
+				3: "PauliFeatureMap",
+				4: "NLocal",
+			}
+
+			const a_dict = {
+				1: "RealAmplitudes",
+				2: "EfficientSU2",
+				3: "TwoLocal",
+			}
+
+			$.ajax("/custom_pqc/start?ansatz=" + a_dict[selectedAnsatz] + "&encoder=" + e_dict[selectedEncoder] + "&" +
+					"encoder_reps=" + $("#encoder-reps")[0].value + "&" +
+					"encoder_alpha=" + $("#encoder-alpha")[0].value+ "&"+
+					"encoder_paulis=" + $("#encoder-paulis")[0].value+ "&"+
+					"encoder_entanglement=" + $("#encoder-entanglement")[0].value+ "&"+
+					"encoder_entanglement_blocks=" + $("#encoder-entanglement-blocks")[0].value+ "&"+
+					"encoder_rotation_blocks=" + $("#encoder-rotation-blocks")[0].value+ "&"+
+					"encoder_skip_final_rotation_layer=" + $("#encoder-skip-final-rotation-layer")[0].value+ "&"+
+					"ansatz_reps=" + $("#ansatz-reps")[0].value+ "&"+
+					"ansatz_entanglement=" + $("#ansatz-entanglement")[0].value+ "&"+
+					"ansatz_entanglement_blocks=" + $("#ansatz-entanglement-blocks")[0].value+ "&"+
+					"ansatz_rotation_blocks=" + $("#ansatz-rotation-blocks")[0].value+ "&"+
+					"ansatz_skip_final_rotation_layer=" + $("#ansatz-skip-final-rotation-layer")[0].value+ "&"+
+					"ansatz_skip_unentangled_qubits=" + $("#ansatz-skip-unentangled-qubits")[0].value+ "&"+
+					"ansatz_su2_gates=" + $("#ansatz-su2-gates")[0].value
+				).done((response)=>{
+					const checkInterval = setInterval(() => {
+				  		checkStatusCustom(response["id"]);
+				  		if (successCustom || jobFailed) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				})
+			customPQCSelected = true;
+			$("#select-pqc")[0].innerText = "Loading...";
+			$("#select-pqc")[0].style.backgroundColor = "green";
+		}
+	}
+
+	function checkStatusCustom(job_id) {
+		$.ajax("/custom_pqc/check?job_id=" + job_id).done((response) => {
+			successCustom = response["status"] == "completed";
+			jobFailed = response["status"] == "failed";
+			if (successCustom) {
+				setTimeout( () => {
+					$("#KL_im")[0].src = "/static/" + response["path_hist"].split("/static/")[1];
+					$("#qc_image")[0].src = "/static/" + response["path_qc_image"].split("/static/")[1];
+					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
+					$("#MW")[0].innerText = "Resulting Entangling Capacity: " + response["mw_meas"];
+
+					$("#qc_image")[0].style.display = "block";
+					$("#KL_im")[0].style.display = "block";
+					customJobId = response["id"];
+				$("#select-pqc")[0].innerText = "Completed";
+				}, 3000);
+			}
+
+			if (jobFailed) {
+				console.log(response["error_message"]);
+				alert(response["error_message"]);
+			}
+		});
+	}
 
 	// TODO: Check if theres any pending jobs
 

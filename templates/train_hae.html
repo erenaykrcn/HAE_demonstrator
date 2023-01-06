@@ -161,8 +161,10 @@
 						</div>
 					</div>
 					<div style="text-align: center; border-bottom: solid;">
-						<div class="startTraining" onclick="selectCustomPqc()" 
-						>Select PQC</div>
+						<div class="startTraining" onclick="selectCustomPqc()" id="select-pqc"
+						>
+						Select PQC
+						
 					</div>
 				</div>
     		</div>
@@ -229,6 +231,10 @@
 	let selectedPQC = 1;
 	let selectedAnsatz = 0;
 	let selectedEncoder = 0;
+	let successCustom = false;
+	let customJobId = 0;
+	let customPQCSelected = false;
+	let jobFailed = false;
 	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
 	$("#MW")[0].innerText = "Resulting Entangling Capacity: {{ MW_measure1 }}";
 
@@ -334,7 +340,7 @@
 
 				$("#custom-tab")[0].style.display = "block";
 			} 
-		} else if (pqc<15 && pqc!=selectedEncoder+10) {
+		} else if (pqc<15 && pqc!=selectedEncoder+10 && !successCustom && !customPQCSelected) {
 			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedEncoder+9]
 			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
@@ -392,7 +398,7 @@
 					break;
 			}
 
-		} else if (pqc < 18 && pqc!=selectedAnsatz+14) {
+		} else if (pqc < 18 && pqc!=selectedAnsatz+14 && !successCustom && !customPQCSelected) {
 			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedAnsatz+13]
 			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
 
@@ -481,63 +487,98 @@
 	}
 
 	$('#startTraining').on("click", () => {
-		$.ajax({
-			url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
+		if (selectedPQC < 10 || successCustom) {
+			// TODO: Custom PQC
+			$.ajax({
+				url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
 
-		}).done((response) => {
-		  	console.log("Traning Started!");
-		  	$('#startTraining')[0].style.display = "none";
-		  	$('#trainingStarted')[0].style.display = "block";
-		  	$("#training-log-cont")[0].style.display = "block";
-		  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Epochs: " + epochs.value + "<br>PQC: "+ selectedPQC
+			}).done((response) => {
+			  	console.log("Traning Started!");
+			  	$('#startTraining')[0].style.display = "none";
+			  	$('#trainingStarted')[0].style.display = "block";
+			  	$("#training-log-cont")[0].style.display = "block";
+			  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Epochs: " + epochs.value + "<br>PQC: "+ selectedPQC
 
-		  	const checkInterval = setInterval(() => {
-		  		checkStatus(response["id"]);
+			  	const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
 
-				console.log(success)
-		  		if (success) {
-		  			clearInterval(checkInterval);
+					console.log(success)
+			  		if (success) {
+			  			clearInterval(checkInterval);
 
-		  		};
-		  	} ,1500);
-
-		  	
-
-		});
+			  		};
+			  	} ,1500);
+			});
+		}
 	});
 
 	function selectCustomPqc() {
-		const e_dict = {
-			1: "ZFeatureMap",
-			2: "ZZFeatureMap",
-			3: "PauliFeatureMap",
-			4: "NLocal",
+		if (!customPQCSelected) {
+			successCustom = false;
+			const e_dict = {
+				1: "ZFeatureMap",
+				2: "ZZFeatureMap",
+				3: "PauliFeatureMap",
+				4: "NLocal",
+			}
+
+			const a_dict = {
+				1: "RealAmplitudes",
+				2: "EfficientSU2",
+				3: "TwoLocal",
+			}
+
+			$.ajax("/custom_pqc/start?ansatz=" + a_dict[selectedAnsatz] + "&encoder=" + e_dict[selectedEncoder] + "&" +
+					"encoder_reps=" + $("#encoder-reps")[0].value + "&" +
+					"encoder_alpha=" + $("#encoder-alpha")[0].value+ "&"+
+					"encoder_paulis=" + $("#encoder-paulis")[0].value+ "&"+
+					"encoder_entanglement=" + $("#encoder-entanglement")[0].value+ "&"+
+					"encoder_entanglement_blocks=" + $("#encoder-entanglement-blocks")[0].value+ "&"+
+					"encoder_rotation_blocks=" + $("#encoder-rotation-blocks")[0].value+ "&"+
+					"encoder_skip_final_rotation_layer=" + $("#encoder-skip-final-rotation-layer")[0].value+ "&"+
+					"ansatz_reps=" + $("#ansatz-reps")[0].value+ "&"+
+					"ansatz_entanglement=" + $("#ansatz-entanglement")[0].value+ "&"+
+					"ansatz_entanglement_blocks=" + $("#ansatz-entanglement-blocks")[0].value+ "&"+
+					"ansatz_rotation_blocks=" + $("#ansatz-rotation-blocks")[0].value+ "&"+
+					"ansatz_skip_final_rotation_layer=" + $("#ansatz-skip-final-rotation-layer")[0].value+ "&"+
+					"ansatz_skip_unentangled_qubits=" + $("#ansatz-skip-unentangled-qubits")[0].value+ "&"+
+					"ansatz_su2_gates=" + $("#ansatz-su2-gates")[0].value
+				).done((response)=>{
+					const checkInterval = setInterval(() => {
+				  		checkStatusCustom(response["id"]);
+				  		if (successCustom || jobFailed) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				})
+			customPQCSelected = true;
+			$("#select-pqc")[0].innerText = "Loading...";
+			$("#select-pqc")[0].style.backgroundColor = "green";
 		}
+	}
+	function checkStatusCustom(job_id) {
+		$.ajax("/custom_pqc/check?job_id=" + job_id).done((response) => {
+			successCustom = response["status"] == "completed";
+			jobFailed = response["status"] == "failed";
+			if (successCustom) {
+				setTimeout( () => {
+					$("#KL_im")[0].src = "/static/" + response["path_hist"].split("/static/")[1];
+					$("#qc_image")[0].src = "/static/" + response["path_qc_image"].split("/static/")[1];
+					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
+					$("#MW")[0].innerText = "Resulting Entangling Capacity: " + response["mw_meas"];
 
-		const a_dict = {
-			1: "RealAmplitudes",
-			2: "EfficientSU2",
-			3: "TwoLocal",
-		}
+					$("#qc_image")[0].style.display = "block";
+					$("#KL_im")[0].style.display = "block";
+					customJobId = response["id"];
+				$("#select-pqc")[0].innerText = "Completed";
+				}, 3000);
+			}
 
-		$.ajax("/custom_pqc/start?ansatz=" + a_dict[selectedAnsatz] + "&encoder=" + e_dict[selectedEncoder] + "&" +
-				"encoder_reps=" + $("#encoder-reps")[0].value + "&" +
-				"encoder_alpha=" + $("#encoder-alpha")[0].value+ "&"+
-				"encoder_paulis=" + $("#encoder-paulis")[0].value+ "&"+
-				"encoder_entanglement=" + $("#encoder-entanglement")[0].value+ "&"+
-				"encoder_entanglement_blocks=" + $("#encoder-entanglement-blocks")[0].value+ "&"+
-				"encoder_rotation_blocks=" + $("#encoder-rotation-blocks")[0].value+ "&"+
-				"encoder_skip_final_rotation_layer=" + $("#encoder-skip-final-rotation-layer")[0].value+ "&"+
-				"ansatz_reps=" + $("#ansatz-reps")[0].value+ "&"+
-				"ansatz_entanglement=" + $("#ansatz-entanglement")[0].value+ "&"+
-				"ansatz_entanglement_blocks=" + $("#ansatz-entanglement-blocks")[0].value+ "&"+
-				"ansatz_rotation_blocks=" + $("#ansatz-rotation-blocks")[0].value+ "&"+
-				"ansatz_skip_final_rotation_layer=" + $("#ansatz-skip-final-rotation-layer")[0].value+ "&"+
-				"ansatz_skip_unentangled_qubits=" + $("#ansatz-skip-unentangled-qubits")[0].value+ "&"+
-				"ansatz_su2_gates=" + $("#ansatz-su2-gates")[0].value
-			).done(()=>{})
-
-		// checkStatus of Custom PQC
+			if (jobFailed) {
+				console.log(response["error_message"]);
+				alert(response["error_message"]);
+			}
+		});
 	}
 
 
