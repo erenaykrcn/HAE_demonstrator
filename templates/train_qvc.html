@@ -497,6 +497,47 @@
 		}
 	}
 
+	let success = false;
+	let result_path = "";
+	function checkStatus(jobId) {
+				$.ajax({
+					url: "/train/check-training?job_id=" + jobId ,
+				}).done((response) => {
+					loss_string = response["loss_string"];
+					loss_list = loss_string.split(";");
+					console.log(loss_list);
+					$("#graph")[0].src = "/static/train_hae/loss_plot/" + response["id"] + "_" + response["epoch"] + ".png";
+
+					let innerHTML = "";
+					if (selectedPQC<10) {
+						innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Max Iter: " + response["max_iter"] + "<br>PQC: "+ selectedPQC + "<br>";
+					} else {
+						innerHTML = "Training Started.<br>Data points in Data set: " + response["n_samples"] + "<br>Max Iter: " + response["max_iter"] + "<br>PQC: Custom<br>";
+					}
+
+					for (let i=0;i<loss_list.length-1;i++) {
+						innerHTML = innerHTML + "-> Evaluations[" + (i+1) + "/"+ parseInt(response["max_iter"])*3 +"]: "+ loss_list[i] +" <br>"
+					}
+
+					success = response["status"] == "completed";
+
+					if (success) {
+						result_path = response["result_path"];
+			  			$(".trainingStarted")[0].innerText = "Training Done!";
+			  			$(".trainingStarted")[0].style.color = "green";
+
+			  			let res_path = result_path;
+			  			res_path = res_path.split(".tx");
+			  			res_path = res_path[res_path.length - 2];
+			  			res_path = res_path.split("_");
+			  			min_loss = res_path[res_path.length - 1];
+			  			innerHTML = innerHTML + "<br><p class='training-complete'>Training Completed. Min Loss Found: " + min_loss + "<br> Result Name (Please note it down for Eval step): loss_" + min_loss + ".txt</p>";
+					}
+
+					$("#log-content")[0].innerHTML = innerHTML;
+				}).fail((e)=>{alert(e);console.log(e);});
+	}
+
 	$('#startTraining').on("click", () => {
 			let initial_point = "random";
 			if (selectedIP=="custom") {
@@ -538,7 +579,7 @@
 				  			clearInterval(checkInterval);
 				  		};
 				  	} ,1500);
-				});
+				}).fail((e)=>{alert(e);console.log(e);});
 			} else if (successCustom && customJobId) {
 				$.ajax({
 					url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&jobId=" + customJobId + "&model=QVC" ,
@@ -556,7 +597,7 @@
 				  		}
 				  	} ,1500);
 
-				});
+				}).fail((e)=>{alert(e);console.log(e);});
 			}
 	});
 
@@ -633,7 +674,7 @@
 				console.log(response["error_message"]);
 				alert(response["error_message"]);
 			}
-		});
+		}).fail((e)=>{alert(e);console.log(e);});
 	}
 
 	// TODO: Check if theres any pending jobs

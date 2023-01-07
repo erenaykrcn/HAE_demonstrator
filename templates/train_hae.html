@@ -334,8 +334,8 @@
 				$("#KL_im")[0].style.display = "block";
 				$("#custom-tab")[0].style.display = "none";
 			} else if (pqc == 10 && !successCustom) {
-				$("#qc_image")[0].src = "none";
-				$("#KL_im")[0].src= "none";
+				$("#qc_image")[0].style.display = "none";
+				$("#KL_im")[0].style.display = "none";
 				$("#KL_div")[0].innerText = "Resulting KL Divergence: ";
 				$("#MW")[0].innerText = "Resulting Entangling Capacity: ";
 
@@ -490,7 +490,7 @@
 					}
 
 					$("#log-content")[0].innerHTML = innerHTML;
-				});
+				}).fail((e)=>{alert(e);console.log(e);});
 	}
 
 	$('#startTraining').on("click", () => {
@@ -513,7 +513,7 @@
 
 			  		};
 			  	} ,1500);
-			});
+			}).fail((e)=>{alert(e);console.log(e);});
 		} else if (successCustom && customJobId) {
 			$.ajax({
 				url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&jobId=" + customJobId + "&model=HAE"
@@ -530,7 +530,7 @@
 			  			clearInterval(checkInterval);
 			  		};
 			  	} ,1500);
-			});
+			}).fail((e)=>{alert(e);console.log(e);});
 		}
 	});
 
@@ -605,7 +605,7 @@
 				console.log(response["error_message"]);
 				alert(response["error_message"]);
 			}
-		});
+		}).fail((e)=>{alert(e);console.log(e);});
 	}
 
 

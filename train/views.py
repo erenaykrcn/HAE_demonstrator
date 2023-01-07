@@ -64,7 +64,34 @@ def start_training(request):
 										  model="QVC",
 				)
 
-	train_model_task.delay(model_to_dict(job))
+	custom_dict = {}
+	if "jobId" in request.GET.keys():
+		customCircuitJob = CustomPQCJob.objects.get(id=customJobId)
+		custom_dict = {
+				"encoder": customCircuitJob.encoder,
+				"ansatz": customCircuitJob.ansatz,
+				"encoder_params": {
+					"entanglement": customCircuitJob.encoder_entanglement,
+					"alpha": customCircuitJob.encoder_alpha,
+					"paulis": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.encoder_paulis.split(",")],
+					"reps": customCircuitJob.encoder_reps,
+					"rotation_blocks": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.encoder_rotation_blocks.split(",")],
+					"entanglement_blocks": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.encoder_entanglement_blocks.split(",")],
+					"skip_final_rotation_layer": customCircuitJob.encoder_skip_final_rotation_layer,
+				},
+				"ansatz_params": {
+					"entanglement": customCircuitJob.ansatz_entanglement,
+					"skip_final_rotation_layer": customCircuitJob.ansatz_skip_final_rotation_layer,
+					"reps": customCircuitJob.ansatz_reps,
+					"rotation_blocks": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.ansatz_rotation_blocks.split(",")],
+					"entanglement_blocks": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.ansatz_entanglement_blocks.split(",")],
+					"su2_gates": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.ansatz_su2_gates.split(",")],
+					"skip_unentangled_qubits": customCircuitJob.ansatz_skip_unentangled_qubits,
+				},
+		}
+
+
+	train_model_task.delay(job=model_to_dict(job), custom_dict=custom_dict)
 	dic = model_to_dict(job)
 	return JsonResponse(dic)
 
