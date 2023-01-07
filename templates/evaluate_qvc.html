@@ -30,6 +30,7 @@
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(9)">PQC9</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(10)">CUSTOM</div>
 			</div>
 
 			<div style="display: inline-block; width: 50%; border-right: solid; padding-bottom: 50px;">
@@ -152,6 +153,7 @@
 		"BINARY_FILES7": "{{ BINARY_FILES7 }}",
 		"BINARY_FILES8": "{{ BINARY_FILES8 }}",
 		"BINARY_FILES9": "{{ BINARY_FILES9 }}",
+		"BINARY_FILES_CUSTOM": "{{ BINARY_FILES_CUSTOM }}",
 	}
 
 	const MULTI_FILES = {
@@ -164,6 +166,7 @@
 		"MULTI_FILES7": "{{ MULTI_FILES7 }}",
 		"MULTI_FILES8": "{{ MULTI_FILES8 }}",
 		"MULTI_FILES9": "{{ MULTI_FILES9 }}",
+		"MULTI_FILES_CUSTOM": "{{ MULTI_FILES_CUSTOM }}",
 	}
 	listFiles(selectedPQC);
 
@@ -220,7 +223,14 @@
 	}
 
 	function listFiles (pqc) {
-		let binary_files = BINARY_FILES["BINARY_FILES" + pqc];
+		let binary_files, multi_files;
+
+		if (pqc<10) {
+			binary_files = BINARY_FILES["BINARY_FILES" + pqc];
+		} else {
+			binary_files = BINARY_FILES["BINARY_FILES_CUSTOM"];
+		}
+
 		binary_files = binary_files.split("&quot;");
 
 		if (binary_files.length >1) {
@@ -236,8 +246,12 @@
 			$("#binary_files_wrap")[0].innerHTML = "No trained models yet.";
 		}
 
+		if (pqc<10) {
+			multi_files = MULTI_FILES["MULTI_FILES" + pqc];
+		} else {
+			multi_files = MULTI_FILES["MULTI_FILES_CUSTOM"];
+		}
 
-		let multi_files = MULTI_FILES["MULTI_FILES" + pqc];
 		multi_files = multi_files.split("&quot;");
 
 		if (multi_files.length >1) {
@@ -297,39 +311,98 @@
 
 	function selectBinaryFile(filename, el) {
 		if (!evalStarted) {
-			$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&pqc=" + selectedPQC).done((response)=>{
-				$("#eval_data_cont")[0].style.display = "block";
-				$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
-				el.style.backgroundColor = "rgb(40, 61, 94)";
-				el.style.color = "rgba(248, 232, 250, 1)";
+			if (selectedPQC>9) {
+				const jobId = filename.split("_")[1];
+				const imgElem = document.getElementById("qc_image");
+				imgElem.src = "/static/customs/qc_images/qc_images_" + jobId + ".png";
 
-				const checkInterval = setInterval(() => {
-			  		checkStatus(response["id"]);
-			  		if (success) {
-			  			clearInterval(checkInterval);
-			  		};
-			  	} ,1500);
-			  	evalStarted = true;
-			});
+				$("#KL_im")[0].src = "/static/customs/hist/hist_" + jobId + ".png"
+				
+				$.ajax("/custom_pqc/check?job_id=" + jobId).done((response)=>{
+					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
+					$("#MW")[0].innerText = "Resulting Entangling Capacity: " + response["mw_meas"];
+				});
+
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&jobId=" + jobId).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+
+
+			} else {
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=True&pqc=" + selectedPQC).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+			}
 		}
 	}
 
 	function selectMultiFile(filename, el) {
 		if (!evalStarted) {
-			$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False").done((response)=>{
-				$("#eval_data_cont")[0].style.display = "block";
-				$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
-				el.style.backgroundColor = "rgb(40, 61, 94)";
-				el.style.color = "rgba(248, 232, 250, 1)";
+			if (selectedPQC>9) {
+				const jobId = filename.split("_")[1];
+				const imgElem = document.getElementById("qc_image");
+				imgElem.src = "/static/customs/qc_images/qc_images_" + jobId + ".png";
+				$("#KL_im")[0].src = "/static/customs/hist/hist_" + jobId + ".png"
+				
+				$.ajax("/custom_pqc/check?job_id=" + jobId).done((response)=>{
+					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
+					$("#MW")[0].innerText = "Resulting Entangling Capacity: " + response["mw_meas"];
+				});
 
-				const checkInterval = setInterval(() => {
-			  		checkStatus(response["id"]);
-			  		if (success) {
-			  			clearInterval(checkInterval);
-			  		};
-			  	} ,1500);
-			  	evalStarted = true;
-			});
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False&jobId=" + jobId).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+
+
+			} else {
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=QVC&filename="+ filename +"&is_binary=False&pqc=" + selectedPQC).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+			}
 		}
 	}
 

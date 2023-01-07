@@ -4,6 +4,7 @@ dirname = os.path.dirname(__file__)
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .constants import MW_measure, SIM_expr, N_PARAMS
+from custom_pqc.models import CustomPQCJob
 import json
 
 import sys
@@ -56,6 +57,8 @@ def evaluate_hae(request):
             files["FILES" + str(i+1)] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results/pqc" + str(i+1))))
         except FileNotFoundError:
             files["FILES" + str(i+1)] = []
+    files["FILES_CUSTOM"] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results/custom_qc")))
+
     dic = dic | files
 
     return render(request, "evaluate_hae.html", dic)
@@ -67,7 +70,7 @@ def evaluate_qvc(request):
     }
     dic = dic | MW_measure
     dic = dic | SIM_expr
-    
+
     binary_files = {}
     multi_files = {}
     for i in range(len(N_PARAMS.keys())):
@@ -80,6 +83,8 @@ def evaluate_qvc(request):
             multi_files["MULTI_FILES" + str(i+1)] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results_QVC/pqc" + str(i+1) + "/multi_cl/")))
         except FileNotFoundError:
             binary_files["MULTI_FILES" + str(i+1)] = []
+    binary_files["BINARY_FILES_CUSTOM"] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results_QVC/custom/binary_cl/")))
+    multi_files["MULTI_FILES_CUSTOM"] = json.dumps(os.listdir(os.path.join(dirname, "../../HAE/data/training_results_QVC/custom/multi_cl/")))
     dic = dic | binary_files
     dic = dic | multi_files
 

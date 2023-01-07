@@ -13,17 +13,17 @@ from preprocessing.visualize import plot_PCA_2D
 
 
 @shared_task()
-def test_model_task(job, test_data, test_labels, path_save=""):
+def test_model_task(job, test_data, test_labels, path_save="", custom_dict={}):
 	model = job["model"]
-	pqc = int(job["pqc"])
+	pqc = int(job["pqc"]) if job["pqc"] else 0
 	n_samples = int(job["n_samples"])
 	test_job = TestJob.objects.get(id=job["id"])
 	predict_cl, labels_cl = predict_classical(test_data=test_data, test_labels=test_labels)
 
 	if model == "HAE":
-		predict, labels = predict_HAE(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels)
+		predict, labels = predict_HAE(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels, custom_dict=custom_dict)
 	elif model == "QVC":
-		predict, labels = predict_QVC(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels)
+		predict, labels = predict_QVC(qc_index=pqc, path=test_job.result_path, test_data=test_data, test_labels=test_labels, custom_dict=custom_dict)
 
 	f1, precision, recall = get_scores(predict, labels)
 	f1_cl, precision_cl, recall_cl = get_scores(predict_cl, labels_cl)

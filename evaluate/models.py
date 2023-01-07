@@ -1,4 +1,5 @@
 from django.db import models
+from custom_pqc.models import CustomPQCJob
 
 
 class TestJob(models.Model):
@@ -21,7 +22,8 @@ class TestJob(models.Model):
 		default="HAE",
 		max_length=15,
 		)
-	pqc = models.TextField(default="1")
+	pqc = models.TextField(null=True, blank=True)
+	customCircuitJob = models.ForeignKey(CustomPQCJob, on_delete=models.CASCADE, blank=True, null=True)
 
 	precision = models.FloatField(null=True, blank=True)
 	recall = models.FloatField(null=True, blank=True)

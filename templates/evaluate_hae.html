@@ -31,6 +31,7 @@
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(7)">PQC7</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(8)">PQC8</div>
 				<div class="pqc-row-elem" onclick="changeSelectedPQC(9)">PQC9</div>
+				<div class="pqc-row-elem" onclick="changeSelectedPQC(10)">CUSTOM</div>
 			</div>
 
 			<div style="display: inline-block; width: 50%; border-right: solid; padding-bottom: 50px;">
@@ -195,6 +196,7 @@
 		"FILES7": "{{ FILES7 }}",
 		"FILES8": "{{ FILES8 }}",
 		"FILES9": "{{ FILES9 }}",
+		"FILES_CUSTOM": "{{ FILES_CUSTOM }}",
 	}
 	listFiles(selectedPQC);
 
@@ -205,7 +207,12 @@
 	}
 
 	function listFiles (pqc) {
-		let files = FILES["FILES" + pqc];
+		let files = "";
+		if (pqc<10) {
+			files = FILES["FILES" + pqc];
+		} else {
+			files = FILES["FILES_CUSTOM"];
+		}
 		files = files.split("&quot;");
 
 		if (files.length >1) {
@@ -265,20 +272,49 @@
 	function selectFile(filename, el) {
 		if (!evalStarted) {
 			$("#eval_data_cont")[0].style.display = "block";
-			$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=HAE&filename="+ filename +"&pqc=" + selectedPQC).done((response)=>{
-				$("#eval_data_cont")[0].style.display = "block";
-				$("#eval_data_im")[0].src = "/static/eval/scatter/HAE_" + nSamples.value + ".png";
-				el.style.backgroundColor = "rgb(40, 61, 94)";
-				el.style.color = "rgba(248, 232, 250, 1)";
 
-				const checkInterval = setInterval(() => {
-			  		checkStatus(response["id"]);
-			  		if (success) {
-			  			clearInterval(checkInterval);
-			  		};
-			  	} ,1500);
-			  	evalStarted = true;
-			});
+			if (selectedPQC>9) {
+				const jobId = filename.split("_")[1];
+				const imgElem = document.getElementById("qc_image");
+				imgElem.src = "/static/customs/qc_images/qc_images_" + jobId + ".png";
+				$("#KL_im")[0].src = "/static/customs/hist/hist_" + jobId + ".png";
+
+				$.ajax("/custom_pqc/check?job_id=" + jobId).done((response)=>{
+					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
+					$("#MW")[0].innerText = "Resulting Entangling Capacity: " + response["mw_meas"];
+				});
+
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=HAE&filename="+ filename +"&jobId=" + jobId).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/HAE_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+			} else {
+
+				$.ajax("/evaluate/metric?n_samples=" + nSamples.value + "&model=HAE&filename="+ filename +"&pqc=" + selectedPQC).done((response)=>{
+					$("#eval_data_cont")[0].style.display = "block";
+					$("#eval_data_im")[0].src = "/static/eval/scatter/HAE_" + nSamples.value + ".png";
+					el.style.backgroundColor = "rgb(40, 61, 94)";
+					el.style.color = "rgba(248, 232, 250, 1)";
+
+					const checkInterval = setInterval(() => {
+				  		checkStatus(response["id"]);
+				  		if (success) {
+				  			clearInterval(checkInterval);
+				  		};
+				  	} ,1500);
+				  	evalStarted = true;
+				});
+			}
 		}
 	}
 

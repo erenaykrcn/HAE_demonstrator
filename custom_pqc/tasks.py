@@ -42,8 +42,8 @@ def custom_pqc_task(job):
 	kl_div = sim_expr(custom_qc=custom_dict, path_custom=os.path.join(dirname, f"../static/customs/hist/hist_{job.id}.png"))
 	mw_meas = meyer_wallach_measure(custom_qc=custom_dict)
 
-	job.kl_div = kl_div
-	job.mw_meas = mw_meas
+	job.kl_div = round(kl_div, 3)
+	job.mw_meas = str(round(mw_meas.real, 3) + round(mw_meas.imag, 3) * 1j)
 	job.path_hist = os.path.join(dirname, f"../static/customs/hist/hist_{job.id}.png")
 
 	pqc = PQC(custom_qc=custom_dict)
