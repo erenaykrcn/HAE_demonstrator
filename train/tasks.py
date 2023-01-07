@@ -21,7 +21,7 @@ def train_model_task(job):
 	n_samples = int(job["n_samples"])
 
 	if job["customCircuitJob"]:
-		customCircuitJob = CustomPQCJob().objects.get(id=job["customCircuitJob"]["id"])
+		customCircuitJob = CustomPQCJob.objects.get(id=job["customCircuitJob"])
 		custom_dict = {
 				"encoder": customCircuitJob.encoder,
 				"ansatz": customCircuitJob.ansatz,
@@ -44,6 +44,7 @@ def train_model_task(job):
 					"skip_unentangled_qubits": customCircuitJob.ansatz_skip_unentangled_qubits,
 				},
 		}
+	 #TODO: Create custom model for n_params and data validation!
 
 
 	if model == "HAE":
@@ -64,6 +65,7 @@ def train_model_task(job):
 	elif model == "QVC":
 		max_iter = job["max_iter"]
 		is_binary = job["is_binary"]
+		# TODO: NPARAMS!
 		initial_point = job["initial_point"] if job["initial_point"] else np.random.random(N_PARAMS[pqc])
 
 		if job["pqc"]:

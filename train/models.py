@@ -29,6 +29,6 @@ class TrainJob(models.Model):
 		default="HAE",
 		max_length=15,
 		)
-	pqc = models.TextField(default="1")
+	pqc = models.TextField(null=True, blank=True)
 	customCircuitJob = models.ForeignKey(CustomPQCJob, on_delete=models.CASCADE, blank=True, null=True)
 

@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from .models import TrainJob
+from custom_pqc.models import CustomPQCJob
 from .tasks import train_model_task
 from django.forms.models import model_to_dict
 
@@ -34,7 +35,7 @@ def start_training(request):
 										  n_samples=int(n_samples),
 										  batch_size=int(batch_size),
 										  learning_rate=float(lr),
-										  customCircuitJob__id=customJobId,
+										  customCircuitJob=CustomPQCJob.objects.get(id=customJobId),
 										  model="HAE",
 				)
 
@@ -59,7 +60,7 @@ def start_training(request):
 										  n_samples=int(n_samples),
 										  is_binary=is_binary,
 										  initial_point=None if initial_point=="random" else initial_point,
-										  customCircuitJob__id=customJobId,
+										  customCircuitJob=CustomPQCJob.objects.get(id=customJobId),
 										  model="QVC",
 				)
 

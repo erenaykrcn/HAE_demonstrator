@@ -235,6 +235,7 @@
 	let customJobId = 0;
 	let customPQCSelected = false;
 	let jobFailed = false;
+	let customKL, customMW, customKLPath, customQCPath = "";
 	$("#KL_div")[0].innerText = "Resulting KL Divergence: {{ SIM_expr1 }}";
 	$("#MW")[0].innerText = "Resulting Entangling Capacity: {{ MW_measure1 }}";
 
@@ -332,14 +333,20 @@
 				$("#qc_image")[0].style.display = "block";
 				$("#KL_im")[0].style.display = "block";
 				$("#custom-tab")[0].style.display = "none";
-			} else if (pqc == 10) {
-				$("#qc_image")[0].style.display = "none";
-				$("#KL_im")[0].style.display = "none";
+			} else if (pqc == 10 && !successCustom) {
+				$("#qc_image")[0].src = "none";
+				$("#KL_im")[0].src= "none";
 				$("#KL_div")[0].innerText = "Resulting KL Divergence: ";
 				$("#MW")[0].innerText = "Resulting Entangling Capacity: ";
 
 				$("#custom-tab")[0].style.display = "block";
-			} 
+			} else if (pqc==10 && successCustom) {
+				$("#KL_im")[0].src = customKLPath;
+				$("#qc_image")[0].src = customQCPath;
+				$("#KL_div")[0].innerText = "Resulting KL Divergence: " + customKL;
+				$("#MW")[0].innerText = "Resulting Entangling Capacity: " + customMW;
+
+			}
 		} else if (pqc<15 && pqc!=selectedEncoder+10 && !successCustom && !customPQCSelected) {
 			const old_pqc = document.getElementsByClassName("pqc-row-elem")[selectedEncoder+9]
 			const pqc_el = document.getElementsByClassName("pqc-row-elem")[pqc-1];
@@ -565,7 +572,7 @@
 				  			clearInterval(checkInterval);
 				  		};
 				  	} ,1500);
-				})
+				}).fail((e)=>{alert(e);console.log(e);})
 			customPQCSelected = true;
 			$("#select-pqc")[0].innerText = "Loading...";
 			$("#select-pqc")[0].style.backgroundColor = "green";
@@ -577,6 +584,11 @@
 			jobFailed = response["status"] == "failed";
 			if (successCustom) {
 				setTimeout( () => {
+					customKL = response["kl_div"];
+					customMW = response["mw_meas"];
+					customKLPath = "/static/" + response["path_hist"].split("/static/")[1];
+					customQCPath = "/static/" + response["path_qc_image"].split("/static/")[1];
+
 					$("#KL_im")[0].src = "/static/" + response["path_hist"].split("/static/")[1];
 					$("#qc_image")[0].src = "/static/" + response["path_qc_image"].split("/static/")[1];
 					$("#KL_div")[0].innerText = "Resulting KL Divergence: " + response["kl_div"];
