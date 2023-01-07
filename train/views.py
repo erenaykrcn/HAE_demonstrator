@@ -18,29 +18,51 @@ def start_training(request):
 		epochs = request.GET["epochs"]
 		batch_size = request.GET["batchSize"]
 		n_samples = request.GET["nSamples"]
-		pqc = request.GET["pqc"]
 
-		job = TrainJob.objects.create(epochs=int(epochs),
-									  n_samples=int(n_samples),
-									  batch_size=int(batch_size),
-									  learning_rate=float(lr),
-									  pqc=pqc,
-									  model="HAE",
-			)
+		if "pqc" in request.GET.keys():
+			pqc = request.GET["pqc"]
+			job = TrainJob.objects.create(epochs=int(epochs),
+										  n_samples=int(n_samples),
+										  batch_size=int(batch_size),
+										  learning_rate=float(lr),
+										  pqc=pqc,
+										  model="HAE",
+				)
+		elif "jobId" in request.GET.keys():
+			customJobId = request.GET["jobId"]
+			job = TrainJob.objects.create(epochs=int(epochs),
+										  n_samples=int(n_samples),
+										  batch_size=int(batch_size),
+										  learning_rate=float(lr),
+										  customCircuitJob__id=customJobId,
+										  model="HAE",
+				)
+
 	elif request.GET["model"] == "QVC":
 		max_iter = request.GET["max_iter"]
 		n_samples = request.GET["nSamples"]
-		pqc = request.GET["pqc"]
 		is_binary = request.GET["classification"] == "binary"
 		initial_point = request.GET["initial_point"]
 
-		job = TrainJob.objects.create(max_iter=int(max_iter),
-									  n_samples=int(n_samples),
-									  is_binary=is_binary,
-									  initial_point=None if initial_point=="random" else initial_point,
-									  pqc=pqc,
-									  model="QVC",
-			)
+		if "pqc" in request.GET.keys():
+			pqc = request.GET["pqc"]
+			job = TrainJob.objects.create(max_iter=int(max_iter),
+										  n_samples=int(n_samples),
+										  is_binary=is_binary,
+										  initial_point=None if initial_point=="random" else initial_point,
+										  pqc=pqc,
+										  model="QVC",
+				)
+		elif "jobId" in request.GET.keys():
+			customJobId = request.GET["jobId"]
+			job = TrainJob.objects.create(max_iter=int(max_iter),
+										  n_samples=int(n_samples),
+										  is_binary=is_binary,
+										  initial_point=None if initial_point=="random" else initial_point,
+										  customCircuitJob__id=customJobId,
+										  model="QVC",
+				)
+
 	train_model_task.delay(model_to_dict(job))
 	dic = model_to_dict(job)
 	return JsonResponse(dic)

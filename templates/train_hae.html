@@ -487,8 +487,7 @@
 	}
 
 	$('#startTraining').on("click", () => {
-		if (selectedPQC < 10 || successCustom) {
-			// TODO: Custom PQC
+		if (selectedPQC < 10) {
 			$.ajax({
 				url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=HAE" ,
 
@@ -501,11 +500,27 @@
 
 			  	const checkInterval = setInterval(() => {
 			  		checkStatus(response["id"]);
-
 					console.log(success)
 			  		if (success) {
 			  			clearInterval(checkInterval);
 
+			  		};
+			  	} ,1500);
+			});
+		} else if (successCustom && customJobId) {
+			$.ajax({
+				url: "/train/start-training?learningRate=" + learningRate.value + "&epochs=" + epochs.value + "&batchSize=" + batchSize.value + "&nSamples=" + nSamples.value + "&jobId=" + customJobId + "&model=HAE"
+			}).done((response) => {
+				console.log("Traning Started!");
+			  	$('#startTraining')[0].style.display = "none";
+			  	$('#trainingStarted')[0].style.display = "block";
+			  	$("#training-log-cont")[0].style.display = "block";
+			  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Epochs: " + epochs.value + "<br>PQC: Custom"
+
+			  	const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
+			  		if (success) {
+			  			clearInterval(checkInterval);
 			  		};
 			  	} ,1500);
 			});

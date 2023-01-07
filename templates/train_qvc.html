@@ -490,7 +490,7 @@
 	}
 
 	$('#startTraining').on("click", () => {
-		if (selectedPQC < 10 || successCustom) {
+		if (selectedPQC < 10) {
 			let initial_point = "random";
 			if (selectedIP=="custom") {
 				const given_custom = $("#custom-value")[0].value;
@@ -514,7 +514,6 @@
 				initial_point = given_custom;
 			}
 
-			// TODO: Custom PQC
 			$.ajax({
 				url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&pqc=" + selectedPQC + "&model=QVC" ,
 
@@ -531,6 +530,24 @@
 			  			clearInterval(checkInterval);
 			  		};
 			  	} ,1500);
+			});
+		} else if (successCustom && customJobId) {
+			$.ajax({
+				url: "/train/start-training?initial_point=" + initial_point + "&max_iter=" + max_iter.value + "&classification=" + selectedCL + "&nSamples=" + nSamples.value + "&jobId=" + customJobId + "&model=QVC" ,
+			}).done((response) => {
+				console.log("Traning Started!");
+			  	$('#startTraining')[0].style.display = "none";
+			  	$('#trainingStarted')[0].style.display = "block";
+			  	$("#training-log-cont")[0].style.display = "block";
+			  	$("#log-content")[0].innerHTML = "Training Started.<br>Data points in Data set: " + nSamples.value + "<br>Max Iter: " + max_iter.value + "<br>PQC: Custom<br>Initializing...";
+
+			  	const checkInterval = setInterval(() => {
+			  		checkStatus(response["id"]);
+			  		if (success && result_path) {
+			  			clearInterval(checkInterval);
+			  		}
+			  	} ,1500);
+
 			});
 		}
 	});

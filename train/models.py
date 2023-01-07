@@ -1,4 +1,5 @@
 from django.db import models
+from custom_pqc.models import CustomPQCJob
 
 
 class TrainJob(models.Model):
@@ -29,4 +30,5 @@ class TrainJob(models.Model):
 		max_length=15,
 		)
 	pqc = models.TextField(default="1")
+	customCircuitJob = models.ForeignKey(CustomPQCJob, on_delete=models.CASCADE, blank=True, null=True)
 
