@@ -2,6 +2,8 @@ import os
 dirname = os.path.dirname(__file__)
 
 from django.http import JsonResponse
+from celery import current_task
+from HAE_demonstrator.celery import app
 
 from .models import CustomPQCJob
 from .tasks import custom_pqc_task
@@ -29,6 +31,10 @@ def custom_start(request):
 		ansatz_skip_final_rotation_layer = request.GET["ansatz_skip_final_rotation_layer"] if "ansatz_skip_final_rotation_layer" in request.GET.keys() else None,
 		ansatz_skip_unentangled_qubits = request.GET["ansatz_skip_unentangled_qubits"] if "ansatz_skip_unentangled_qubits" in request.GET.keys() else None,
 		)
+	if current_task:
+		app.control.revoke(current_task.id, terminate=True)
+
+
 	custom_pqc_task.delay(model_to_dict(job))
 	return JsonResponse(model_to_dict(job))
 

@@ -2,7 +2,6 @@ import os
 dirname = os.path.dirname(__file__)
 
 from celery import shared_task
-from celery.bin import amqp
 import numpy as np
 from .models import TrainJob
 from custom_pqc.models import CustomPQCJob
@@ -16,8 +15,8 @@ from qnn.qcircuits.circuit_map import N_PARAMS
 from qnn.utils import PQC
 
 
-@shared_task()
-def train_model_task(job, custom_dict={}):
+@shared_task(bind=True)
+def train_model_task(self, job, custom_dict={}):
 	model = job["model"]
 	n_samples = int(job["n_samples"])
 

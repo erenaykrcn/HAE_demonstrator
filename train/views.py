@@ -2,6 +2,8 @@ import os
 dirname = os.path.dirname(__file__)
 
 from django.http import HttpResponse, JsonResponse
+from celery import current_task
+from HAE_demonstrator.celery import app
 import plotly.express as px
 import plotly
 import numpy as np
@@ -89,7 +91,9 @@ def start_training(request):
 					"skip_unentangled_qubits": customCircuitJob.ansatz_skip_unentangled_qubits,
 				},
 		}
-
+	
+	if current_task:
+		app.control.revoke(current_task.id, terminate=True)
 
 	train_model_task.delay(job=model_to_dict(job), custom_dict=custom_dict)
 	dic = model_to_dict(job)

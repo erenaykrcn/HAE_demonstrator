@@ -11,8 +11,8 @@ sys.path.append(os.path.join(dirname, '../../HAE/modules/'))
 from qnn.utils import sim_expr, meyer_wallach_measure, PQC
 
 
-@shared_task()
-def custom_pqc_task(job):
+@shared_task(bind=True)
+def custom_pqc_task(self, job):
 	job = CustomPQCJob.objects.get(id=job["id"])
 
 	custom_dict = {

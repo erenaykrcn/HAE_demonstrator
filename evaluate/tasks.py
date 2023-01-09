@@ -12,8 +12,9 @@ from metrics.predict import predict_HAE, predict_classical, predict_QVC
 from preprocessing.visualize import plot_PCA_2D
 
 
-@shared_task()
-def test_model_task(job, test_data, test_labels, path_save="", custom_dict={}):
+@shared_task(bind=True)
+def test_model_task(self, job, test_data, test_labels, path_save="", custom_dict={}):
+
 	model = job["model"]
 	pqc = int(job["pqc"]) if job["pqc"] else 0
 	n_samples = int(job["n_samples"])

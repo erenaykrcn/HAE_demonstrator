@@ -2,6 +2,8 @@ import os
 dirname = os.path.dirname(__file__)
 
 from django.http import JsonResponse
+from celery import current_task
+from HAE_demonstrator.celery import app
 
 from .models import TestJob
 from custom_pqc.models import CustomPQCJob
@@ -55,6 +57,12 @@ def evaluate_metric(request):
     test_data_copy = test_data.copy()
     test_labels_copy = test_labels.copy()
     plot_PCA_2D(test_data=test_data_copy, test_labels=test_labels_copy, path_save=path_save)
+
+    # TODO: list the current tasks and terminate them
+    i = app.control.inspect()
+    print(i.reserved())
+    if current_task:
+        app.control.revoke(current_task.id, terminate=True)
 
     if "pqc" in request.GET.keys():
         pqc = int(request.GET["pqc"])
