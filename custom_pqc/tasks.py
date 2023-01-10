@@ -4,6 +4,7 @@ dirname = os.path.dirname(__file__)
 from celery import shared_task
 import numpy as np
 from .models import CustomPQCJob
+from train.models import ActiveTask
 
 
 import sys
@@ -13,6 +14,12 @@ from qnn.utils import sim_expr, meyer_wallach_measure, PQC
 
 @shared_task(bind=True)
 def custom_pqc_task(self, job):
+	active_task = ActiveTask.objects.all()[0]
+	active_task.celery_task_id = self.request.id
+	active_task.task_type = "train"
+	active_task.task_id = job["id"]
+	active_task.save()
+
 	job = CustomPQCJob.objects.get(id=job["id"])
 
 	custom_dict = {

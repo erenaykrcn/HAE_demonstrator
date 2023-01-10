@@ -32,3 +32,13 @@ class TrainJob(models.Model):
 	pqc = models.TextField(null=True, blank=True)
 	customCircuitJob = models.ForeignKey(CustomPQCJob, on_delete=models.CASCADE, blank=True, null=True)
 
+
+class ActiveTask(models.Model):
+	celery_task_id = models.TextField()
+	task_type = models.CharField(max_length=15,
+                  choices=(
+                  	("train", "train"),
+                  	("test", "test"),
+                  	("custom_pqc", "custom_pqc")),
+                  )
+	task_id = models.IntegerField()

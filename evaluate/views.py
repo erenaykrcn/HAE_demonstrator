@@ -6,6 +6,7 @@ from celery import current_task
 from HAE_demonstrator.celery import app
 
 from .models import TestJob
+from train.models import ActiveTask
 from custom_pqc.models import CustomPQCJob
 from .tasks import test_model_task
 from django.forms.models import model_to_dict
@@ -57,12 +58,10 @@ def evaluate_metric(request):
     test_data_copy = test_data.copy()
     test_labels_copy = test_labels.copy()
     plot_PCA_2D(test_data=test_data_copy, test_labels=test_labels_copy, path_save=path_save)
-
-    # TODO: list the current tasks and terminate them
-    i = app.control.inspect()
-    print(i.reserved())
-    if current_task:
-        app.control.revoke(current_task.id, terminate=True)
+    
+    # Terminate the current ongoing task- if there is any
+    active_task = ActiveTask.objects.all()[0]
+    app.control.revoke(active_task.celery_task_id, terminate=True)
 
     if "pqc" in request.GET.keys():
         pqc = int(request.GET["pqc"])

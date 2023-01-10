@@ -3,7 +3,7 @@ dirname = os.path.dirname(__file__)
 
 from celery import shared_task
 import numpy as np
-from .models import TrainJob
+from .models import TrainJob, ActiveTask
 from custom_pqc.models import CustomPQCJob
 
 import sys
@@ -19,6 +19,12 @@ from qnn.utils import PQC
 def train_model_task(self, job, custom_dict={}):
 	model = job["model"]
 	n_samples = int(job["n_samples"])
+
+	active_task = ActiveTask.objects.all()[0]
+	active_task.celery_task_id = self.request.id
+	active_task.task_type = "train"
+	active_task.task_id = job["id"]
+	active_task.save()
 
 	if model == "HAE":
 		learningRate = float(job["learning_rate"])

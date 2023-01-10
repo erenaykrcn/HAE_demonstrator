@@ -6,6 +6,7 @@ from celery import current_task
 from HAE_demonstrator.celery import app
 
 from .models import CustomPQCJob
+from train.models import ActiveTask
 from .tasks import custom_pqc_task
 from django.forms.models import model_to_dict
 
@@ -31,9 +32,10 @@ def custom_start(request):
 		ansatz_skip_final_rotation_layer = request.GET["ansatz_skip_final_rotation_layer"] if "ansatz_skip_final_rotation_layer" in request.GET.keys() else None,
 		ansatz_skip_unentangled_qubits = request.GET["ansatz_skip_unentangled_qubits"] if "ansatz_skip_unentangled_qubits" in request.GET.keys() else None,
 		)
-	if current_task:
-		app.control.revoke(current_task.id, terminate=True)
-
+	
+	# Terminate the current ongoing task- if there is any
+	active_task = ActiveTask.objects.all()[0]
+	app.control.revoke(active_task.celery_task_id, terminate=True)
 
 	custom_pqc_task.delay(model_to_dict(job))
 	return JsonResponse(model_to_dict(job))

@@ -9,7 +9,7 @@ import plotly
 import numpy as np
 import pandas as pd
 
-from .models import TrainJob
+from .models import TrainJob, ActiveTask
 from custom_pqc.models import CustomPQCJob
 from .tasks import train_model_task
 from django.forms.models import model_to_dict
@@ -92,8 +92,10 @@ def start_training(request):
 				},
 		}
 	
-	if current_task:
-		app.control.revoke(current_task.id, terminate=True)
+	# Terminate the current ongoing task- if there is any
+	active_task = ActiveTask.objects.all()[0]
+		
+	app.control.revoke(active_task.celery_task_id, terminate=True)
 
 	train_model_task.delay(job=model_to_dict(job), custom_dict=custom_dict)
 	dic = model_to_dict(job)

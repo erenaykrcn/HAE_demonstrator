@@ -4,6 +4,7 @@ dirname = os.path.dirname(__file__)
 from celery import shared_task
 import numpy as np
 from .models import TestJob
+from train.models import ActiveTask
 
 import sys
 sys.path.append(os.path.join(dirname, '../../HAE/modules/'))
@@ -14,6 +15,11 @@ from preprocessing.visualize import plot_PCA_2D
 
 @shared_task(bind=True)
 def test_model_task(self, job, test_data, test_labels, path_save="", custom_dict={}):
+	active_task = ActiveTask.objects.all()[0]
+	active_task.celery_task_id = self.request.id
+	active_task.task_type = "train"
+	active_task.task_id = job["id"]
+	active_task.save()
 
 	model = job["model"]
 	pqc = int(job["pqc"]) if job["pqc"] else 0
