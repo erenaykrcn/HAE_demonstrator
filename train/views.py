@@ -69,11 +69,54 @@ def start_training(request):
 	custom_dict = {}
 	if "jobId" in request.GET.keys():
 		customCircuitJob = CustomPQCJob.objects.get(id=customJobId)
+
+		layers = []
+		encoder_entanglement = customCircuitJob.encoder_entanglement
+		if "[" in customCircuitJob.encoder_entanglement:
+			# Assumes that an entangler map was provided instead of the choices of 
+			# full, linear, reverse_linear, pairwise, circular or sca
+			encoder_entanglement = customCircuitJob.encoder_entanglement[1:]
+			encoder_entanglement = encoder_entanglement[:-2]
+			encoder_entanglement = encoder_entanglement.split("],")
+			for i, layer in enumerate(encoder_entanglement):
+				layer=layer[1:]
+				gates = []
+				layer = layer.split("),")
+				for j, gate in enumerate(layer):
+					gate = gate[1:]
+					if j == len(layer) - 1:
+						gate = gate[:-1]
+					gate = gate.split(",")
+					gates.append((int(gate[0]), int(gate[1])))
+				layers.append(gates)
+			encoder_entanglement = layers
+
+		layers = []
+		ansatz_entanglement = customCircuitJob.ansatz_entanglement
+		if "[" in customCircuitJob.ansatz_entanglement:
+			# Assumes that an entangler map was provided instead of the choices of 
+			# full, linear, reverse_linear, pairwise, circular or sca
+			ansatz_entanglement = customCircuitJob.ansatz_entanglement[1:]
+			ansatz_entanglement = ansatz_entanglement[:-2]
+			ansatz_entanglement = ansatz_entanglement.split("],")
+			for i, layer in enumerate(ansatz_entanglement):
+				layer=layer[1:]
+				gates = []
+				layer = layer.split("),")
+				for j, gate in enumerate(layer):
+					gate = gate[1:]
+					if j == len(layer) - 1:
+						gate = gate[:-1]
+					gate = gate.split(",")
+					gates.append((int(gate[0]), int(gate[1])))
+				layers.append(gates)
+			ansatz_entanglement = layers
+
 		custom_dict = {
 				"encoder": customCircuitJob.encoder,
 				"ansatz": customCircuitJob.ansatz,
 				"encoder_params": {
-					"entanglement": customCircuitJob.encoder_entanglement,
+					"entanglement": encoder_entanglement,
 					"alpha": customCircuitJob.encoder_alpha,
 					"paulis": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.encoder_paulis.split(",")],
 					"reps": customCircuitJob.encoder_reps,
@@ -82,7 +125,7 @@ def start_training(request):
 					"skip_final_rotation_layer": customCircuitJob.encoder_skip_final_rotation_layer,
 				},
 				"ansatz_params": {
-					"entanglement": customCircuitJob.ansatz_entanglement,
+					"entanglement": ansatz_entanglement,
 					"skip_final_rotation_layer": customCircuitJob.ansatz_skip_final_rotation_layer,
 					"reps": customCircuitJob.ansatz_reps,
 					"rotation_blocks": [el.replace("[", "").replace("]", "").replace("'", "").replace("\"", "").replace("`", "").replace(" ", "") for el in customCircuitJob.ansatz_rotation_blocks.split(",")],
@@ -94,7 +137,6 @@ def start_training(request):
 	
 	# Terminate the current ongoing task- if there is any
 	active_task = ActiveTask.objects.all()[0]
-		
 	app.control.revoke(active_task.celery_task_id, terminate=True)
 
 	train_model_task.delay(job=model_to_dict(job), custom_dict=custom_dict)

@@ -516,7 +516,7 @@
 					}
 
 					for (let i=0;i<loss_list.length-1;i++) {
-						innerHTML = innerHTML + "-> Evaluations[" + (i+1) + "/"+ parseInt(response["max_iter"])*3 +"]: "+ loss_list[i] +" <br>"
+						innerHTML = innerHTML + "-> Evaluations[" + (i+1)*3 + "/"+ parseInt(response["max_iter"])*3 +"]: "+ loss_list[i] +" <br>"
 					}
 
 					success = response["status"] == "completed";
