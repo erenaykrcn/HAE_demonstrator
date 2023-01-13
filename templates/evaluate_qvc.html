@@ -293,16 +293,10 @@
 						$("#eval_started")[0].style.display = "none";
 						$("#loading")[0].style.display = "none";
 						$("#result-block")[0].style.display = "block";
-						try {
+
+						setTimeout(()=>{
 							$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
-						} catch (e) {
-							const checkInterval = setInterval(() => {
-								$("#eval_data_im")[0].src = "/static/eval/scatter/QVC_" + nSamples.value + "_after_training.png";
-						  		clearInterval(checkInterval);
-						  	} ,5000);
-
-						}
-
+						}, 5000);
 					}
 				});
 	}
