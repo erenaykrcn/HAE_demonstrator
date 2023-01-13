@@ -19,6 +19,9 @@
             <img style="width: 100%" src="{% static 'homepage/HAE_diagram.png' %}">
             <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 1:</a> Building Blocks of the Hybrid Autoencoder (HAE)</label>
             <br>
+            <img style="width: 100%" src="{% static 'homepage/metric_hae.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 2:</a> Comparison of the F1, Precision and Recall Scores of the HAE Approach and Classical Results</label>
+            <br>
             <br>
             In addition to the aforementioned approach, I implemented and tested another approach for this problem, that is named QVC_loss approach in this project. Main
             difference of this approach is that the weights of the Quantum Circuit and weights of the Classical Autoencoder are trained using different loss functions/approaches. Firstly the classical weights are trained without the Quantum layer based on the reconstruction loss. Training data set for this step contains only
@@ -26,14 +29,14 @@
             <br>
             <br>
             <img style="width: 100%" src="{% static 'homepage/QVC_diagram.png' %}">
-            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 2:</a> Building Blocks of the Quantum Variational Classifier Autoencoder (QVC_loss)</label>
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 3:</a> Building Blocks of the Quantum Variational Classifier Autoencoder (QVC_loss)</label>
             <br>
             <br>
             I observed a significant boost to the precision of the predictions, using the QVC_loss approach in comparison to the HAE (Hybrid Autoencoder) or CAE (Classical Autoencoder) approaches. Overall, QVC_loss also delivered higher F1 scores. the downside of the QVC_loss however is that it takes longer to be trained using a Quantum simulator.
             <br>
             <br>
-            <img style="width: 100%" src="{% static 'homepage/metrics_2.png' %}">
-            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 3:</a> Comparison of the F1, Precision and Recall Scores of the Different Approaches</label>
+            <img style="width: 100%" src="{% static 'homepage/metric_qvc2.png' %}">
+            <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 4:</a> Comparison of the F1, Precision and Recall Scores of the QVC Approach and Classical Results</label>
             <br>
             <br>
             In this demonstrator project, you will be able to select different Quantum Circuit configurations and train the model with the selected QC, with a customizable learningRate, number of epochs and number of training data points. You will also be able to evaluate the test data points with a pre-trained model and compare the results for different approaches. Lastly, it is also possible to visualize the data points in the usecase data set as they represent pixels of a 3x3 image, along with the reconstructed image by the Autoencoder, given one of the pre-trained models.
@@ -80,6 +83,14 @@
                 the 4 dimenstional latent space representation of 400 test data points. Latent space representation extracted from the Classical Encoder. 
             </label>
         </p>
+
+        <br>
+        <img style="width: 100%" src="{% static 'homepage/metric_hae_scatter.png' %}">
+        <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 9:</a> PCA Scatter Plot of the Evalution Results of the Test Data, HAE Approach</label>
+
+        <br>
+        <img style="width: 100%" src="{% static 'homepage/metric_qvc_scatter.png' %}">
+        <label style="text-align: center; width: 100%"><a style="font-weight: bold;">Figure 9:</a> PCA Scatter Plot of the Evalution Results of the Test Data, QVC Approach</label>
 
     </div>
 
