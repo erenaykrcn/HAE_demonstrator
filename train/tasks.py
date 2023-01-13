@@ -42,8 +42,8 @@ def train_model_task(self, job, custom_dict={}):
 		max_iter = job["max_iter"]
 		is_binary = job["is_binary"]
 		if job["pqc"]:
-			initial_point = job["initial_point"] if job["initial_point"] else np.random.random(N_PARAMS[pqc])
 			pqc = int(job["pqc"])
+			initial_point = job["initial_point"] if job["initial_point"] else np.random.random(N_PARAMS[pqc])
 			model = QVCAutoencoder(qc_index=pqc, max_iter=max_iter, n_samples=n_samples, job=job)
 		elif job["customCircuitJob"]:
 			pqc_model = PQC(custom_qc=custom_dict)
